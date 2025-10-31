@@ -44,8 +44,8 @@
   @theme {
     --color-surface: #181818;
     --color-background: #0f0f0f;
-    --color-primary: #ffffff;
-    --color-secondary: #aaaaaa;
+    --color-primary1: #ffffff;
+    --color-secondary2: #aaaaaa;
     --color-accent: #ff4b4b;
     --color-border: #303030;
     --color-hover: rgba(105, 105, 105, 0.3);

@@ -1,6 +1,11 @@
 @import "tailwindcss";
 @layer {
   .icons {
-    @apply text-[clamp(1.25rem,1.7vw,4rem)] duration-100 ease-in  hover:outline-[calc(.2rem+.16vw)]  hover:outline-white/30  hover:bg-white/30 border-none rounded-full cursor-pointer;
+    @apply text-[clamp(1.25rem,1.7vw,4rem)] duration-100 ease-linear  hover:outline-[calc(.2rem+.16vw)]  hover:outline-white/30  hover:bg-white/30 border-none rounded-full cursor-pointer;
+  }
+  .mainLinks {
+    @apply text-[clamp(1.25rem,1.4vw,3.7rem)] duration-100 ease-linear flex    items-center          cursor-pointer;
   }
 }
+
+

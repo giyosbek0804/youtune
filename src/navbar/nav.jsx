@@ -1,14 +1,53 @@
-import { LuSearch, LuUpload } from "react-icons/lu";
-import { FaArrowLeft, FaMicrophone, FaRegBell } from "react-icons/fa6";
+import {
+  LuHistory,
+  LuMessageSquareWarning,
+  LuSearch,
+  LuUpload,
+} from "react-icons/lu";
+import {
+  SiYoutubekids,
+  SiYoutubeshorts,
+  SiYoutubestudio,
+} from "react-icons/si";
+import {
+  FaChevronRight,
+  FaQuestionCircle,
+  FaRegLightbulb,
+  FaRegNewspaper,
+  FaThumbsUp,
+  FaTrophy,
+  FaUserCircle,
+} from "react-icons/fa";
+import { FaGraduationCap } from "react-icons/fa";
+import {
+  MdHistory,
+  MdOutlineAccessTime,
+  MdOutlineAccessTimeFilled,
+  MdOutlinePlaylistPlay,
+  MdSubscriptions,
+} from "react-icons/md";
+import { GiConsoleController, GiGears } from "react-icons/gi";
+import { HiSignal } from "react-icons/hi2";
+import { IoFlagSharp, IoHome } from "react-icons/io5";
+import { IoMusicalNotes } from "react-icons/io5";
+import { BiSolidVideos } from "react-icons/bi";
+import { FaArrowLeft, FaBars, FaMicrophone, FaRegBell } from "react-icons/fa6";
 import { FiPlus } from "react-icons/fi";
+import { GiHanger } from "react-icons/gi";
 import "../index.css";
 import "./nav.css";
-import { useState } from "react";
+import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 
 function Navbar() {
   const [navbarExpanded, setNavbarExpanded] = useState(false);
   const [inputValue, setInputValue] = useState("");
+  const [expandAside, setExpandAside] = useState(false);
+  const [selected, setSelected] = useState("home");
+  const [showExtra, setShowExtra] = useState(false);
 
+  const location = useLocation();
   function submit(e) {
     e.preventDefault();
     if (inputValue.trim() === "") {
@@ -16,21 +55,275 @@ function Navbar() {
     }
     console.log(inputValue);
   }
+
+  // aside data
+  const asideData = [
+    {
+      id: "main",
+      title: null,
+      alwaysVisible: true,
+      links: [
+        {
+          id: "home",
+          icon: <IoHome />,
+          label: "Home",
+          selected: true,
+          path: "/",
+        },
+        {
+          id: "shorts",
+          icon: <SiYoutubeshorts />,
+          label: "Shorts",
+          selected: false,
+          path: "/shorts",
+        },
+        {
+          id: "subscriptions",
+          icon: <MdSubscriptions />,
+          label: "Subscriptions",
+          selected: false,
+          message: true,
+          path: "/subscriptions",
+        },
+        {
+          id: "youSmall",
+          icon: <FaUserCircle />,
+          label: "You",
+          selected: false,
+          path: "/you",
+        },
+      ],
+    },
+    {
+      id: "you",
+      title: null,
+      alwaysVisible: showExtra,
+      links: [
+        {
+          id: "yourActivity",
+          icon: <LuHistory />,
+          label: "You   >",
+          selected: false,
+          title: true,
+          path: "/you",
+        },
+        {
+          id: "history",
+          icon: <LuHistory />,
+          label: "History",
+          selected: false,
+          path: "/history",
+        },
+        {
+          id: "playlist",
+          icon: <MdOutlinePlaylistPlay />,
+          label: "Playlist",
+          selected: false,
+          path: "/playlist",
+        },
+        {
+          id: "yourVideos",
+          icon: <BiSolidVideos />,
+          label: "Your Videos",
+          selected: false,
+          path: "/yourvideos",
+        },
+        {
+          id: "yourCourses",
+          icon: <FaGraduationCap />,
+          label: "Your Courses",
+          selected: false,
+          path: "/yourcourses",
+        },
+        {
+          id: "watchLater",
+          icon: <MdOutlineAccessTimeFilled />,
+          label: "Watch Later",
+          selected: false,
+          path: "/watchlater",
+        },
+        {
+          id: "likedVideos",
+          icon: <FaThumbsUp />,
+          label: "Liked Videos",
+          selected: false,
+          path: "/likedvideos",
+        },
+      ],
+    },
+    {
+      id: "subscription",
+      title: null,
+      alwaysVisible: showExtra,
+      links: [
+        {
+          id: "subscriptions",
+          icon: <LuHistory />,
+          label: "Subscriptions   >",
+          selected: false,
+          title: true,
+          message: true,
+          path: "/subscriptions",
+        },
+      ],
+    },
+    {
+      id: "explore",
+      title: "Explore",
+      alwaysVisible: showExtra,
+      links: [
+        {
+          id: "music",
+          icon: <IoMusicalNotes />,
+          label: "Music",
+          selected: false,
+          path: "/music",
+        },
+        {
+          id: "live",
+          icon: <HiSignal />,
+          label: "Live",
+          selected: false,
+          path: "/live",
+        },
+        {
+          id: "gaming",
+          icon: <GiConsoleController />,
+          label: "Gaming",
+          selected: false,
+          path: "/gaming",
+        },
+        {
+          id: "news",
+          icon: <FaRegNewspaper />,
+          label: "News",
+          selected: false,
+          path: "/news",
+        },
+        {
+          id: "sport",
+          icon: <FaTrophy />,
+          label: "Sport",
+          selected: false,
+          path: "/sport",
+        },
+        {
+          id: "learning",
+          icon: <FaRegLightbulb />,
+          label: "Learning",
+          selected: false,
+          path: "/live",
+        },
+        {
+          id: "fashion",
+          icon: <GiHanger />,
+          label: "Fashion & beauty",
+          selected: false,
+          path: "/fashion",
+        },
+      ],
+    },
+    {
+      id: "youtuneProducts",
+      title: "More from YouTune",
+      alwaysVisible: showExtra,
+      links: [
+        {
+          id: "youtubeStudio",
+          icon: <SiYoutubestudio />,
+          label: "YouTune Studio ",
+          selected: false,
+          path: "/studio",
+        },
+        {
+          id: "youtuneKids",
+          icon: <SiYoutubekids />,
+          label: "YouTune Kids ",
+          selected: false,
+          path: "/kids",
+        },
+      ],
+    },
+    {
+      id: "appInfo",
+      title: null,
+      alwaysVisible: showExtra,
+      links: [
+        {
+          id: "settings",
+          icon: <GiGears />,
+          label: "YouTune Studio ",
+          selected: false,
+          path: "/studio",
+        },
+        {
+          id: "reportHistory",
+          icon: <IoFlagSharp />,
+          label: "Report History ",
+          selected: false,
+          path: "/reporthistory",
+        },
+        {
+          id: "help",
+          icon: <FaQuestionCircle />,
+          label: "Help ",
+          selected: false,
+          path: "/help",
+        },
+        {
+          id: "sendFeedback",
+          icon: <LuMessageSquareWarning />,
+          label: "Send Feedback ",
+          selected: false,
+          path: "/sendfeedback",
+        },
+      ],
+    },
+  ];
+
+  useEffect(() => {
+    // Find the section that contains the current path
+    const matchedSection = asideData.find((section) =>
+      section.links.some((link) => link.path === location.pathname)
+    );
+
+    const matchedLink = matchedSection
+      ? matchedSection.links.find((link) => link.path === location.pathname)
+      : null;
+
+    if (matchedLink) {
+      setSelected(matchedLink.id);
+    }
+  }, [location.pathname]);
+
   return (
     <>
-      <section className=" fixed top-0 left-0 bg-background w-full flex items-center justify-between px-[calc(.5rem+1vw)] lg:px-[calc(1rem+1.5vw)] py-[calc(.5rem+1vw)]  text-white">
-        {/* logo */}
-        <abbr
-          title="YouTune Home"
-          className="flex items-center  gap-1.5 cursor-pointer no-underline"
-        >
-          <img
-            src="/images/youtube logo.png"
-            alt="logo"
-            className="w-[calc(1.6rem+1.2vw)]  lg:w-[calc(1.4rem+1.1vw)] h-auto "
-          />
-          <p className="text-[clamp(1.23rem,1.5vw,3rem)] font-bold">YouTune</p>
-        </abbr>
+      {/* navbar section */}
+      <section className=" fixed top-0    z-10 bg-background w-full flex items-center justify-between pr-[calc(.5rem+1vw)]  lg:pr-[calc(1rem+1.5vw)] pl-[calc(.6rem+1vw)]  py-[calc(.2rem+.5vw)]  text-white">
+        <div className="flex items-center gap-[calc(.7rem+1vw)]">
+          <div className="icons hidden md:block ">
+            <FaBars
+              onClick={() => {
+                setExpandAside((prev) => !prev);
+                setShowExtra((prev) => !prev);
+              }}
+            />
+          </div>
+
+          <abbr
+            title="YouTune Home"
+            className="flex items-center  gap-1 cursor-pointer no-underline"
+          >
+            <img
+              src="/images/youtube logo.png"
+              alt="logo"
+              className="w-[calc(1.4rem+1.2vw)]  lg:w-[calc(1rem+1.1vw)] h-auto "
+            />
+            <p className="text-[clamp(1.23rem,1.5vw,3rem)] font-bold">
+              YouTune
+            </p>
+          </abbr>
+        </div>
 
         {/* search part */}
         <div
@@ -54,14 +347,14 @@ function Navbar() {
               value={inputValue}
               type="text"
               onChange={(e) => setInputValue(e.target.value)}
-              className={`outline-none border-hover border focus-within:border-blue-600  py-[calc(.2rem+.39vw)] rounded-l-3xl pl-[calc(.6rem+.8vw)]  md:block text-[clamp(1rem,1.2vw,3rem)]     md:w-full  ${
+              className={`outline-none border-hover border focus-within:border-blue-600  py-[calc(.1rem+.35vw)] rounded-l-3xl pl-[calc(.6rem+.8vw)]  md:block text-[clamp(1rem,1.1vw,3rem)]     md:w-full  ${
                 navbarExpanded ? "w-full block " : "w-0  hidden "
               } `}
               placeholder="Search"
             />
             <abbr title="Search">
               <button
-                className={` flex items-center justify-center md:border border-hover  cursor-pointer py-[calc(.25rem+.35vw)]   rounded-br-3xl rounded-tr-3xl ${
+                className={` flex items-center justify-center md:border border-hover  cursor-pointer py-[calc(.15rem+.335vw)]   rounded-br-3xl rounded-tr-3xl ${
                   navbarExpanded
                     ? "bg-hover w-[calc(3rem+2vw)]"
                     : "md:w-[calc(3rem+2vw)] md:bg-hover"
@@ -101,6 +394,96 @@ function Navbar() {
             src="/images/user-image.jpg"
             alt="user profile image"
           />
+        </div>
+      </section>
+
+      {/* aside section */}
+      <section
+        className={` fixed  left-0 bottom-0 overflow-auto md:pt-[calc(2rem+2.5vw)]   md:bottom-auto md:top-0 h-fit md:h-screen  transition-all duration-300 
+  ${
+    expandAside
+      ? "md:w-[calc(8.7rem+8vw)] w-full"
+      : "md:w-[calc(2.5rem+3vw)] w-[100%] "
+  } bg-background`}
+      >
+        <div className="flex   flex-row md:flex-col  items-center justify-between px-2  md:p-4">
+          {asideData.map((section) => {
+            return (
+              <div
+                key={section.id}
+                className={`  w-full md:w-fit  ${
+                  section.alwaysVisible ? "block  " : "hidden"
+                }`}
+              >
+                <p className="px-[calc(.5rem+.5vw)]  mb-[calc(.3rem+.2vw)] font-black text-[clamp(1rem,1vw,3.8rem)] ">
+                  {section.title}
+                </p>
+                <div className=" flex-row md:flex-col justify-between px-[calc(1rem+1vw)] md:px-0 flex w-full">
+                  {section.links.map((link) => (
+                    <Link key={link.id} to={link.path}>
+                      <motion.div
+                        onClick={() => setSelected(link.id)}
+                        layout
+                        className={`  ${
+                          link.title
+                            ? "flex-row-reverse  text-shadow-2xs text-shadow-white justify-start items-start "
+                            : ""
+                        } flex-wrap mainLinks hover:bg-hover  rounded-[10px] 
+                 
+                   ${
+                     expandAside
+                       ? `w-[calc(7.8rem+7vw)] justify-between py-[calc(.2rem+.2vw)] px-[calc(.5rem+.5vw)]  ${
+                           selected === link.id ? "bg-hover" : ""
+                         }`
+                       : "w-[calc(2rem+2.7vw)] justify-center py-[calc(.5rem+.5vw)]"
+                   }`}
+                      >
+                        <motion.div
+                          layout
+                          className={`  ${
+                            link.title ? "hidden" : "block"
+                          }   my-[calc(.1rem+.1vw)]   ${
+                            selected === link.id
+                              ? "text-primary1 drop-shadow-[0px_0px_2px_rgba(0,0,0,0)] drop-shadow-transparent"
+                              : "text-surface drop-shadow-[0px_0px_1px_rgba(0,0,0,0)] drop-shadow-primary1"
+                          } ${
+                            expandAside ? "  mx-0 " : "   mx-[calc(1rem+1vw)]  "
+                          }  `}
+                        >
+                          {link.icon}
+                        </motion.div>
+
+                        <p
+                          className={`  text-left  ${
+                            link.title
+                              ? "w-full text-[clamp(1rem,1vw,3.8rem)] "
+                              : ""
+                          } ${
+                            expandAside
+                              ? "w-[75%] pl-[5%] text-[clamp(.9rem,.9vw,3.5rem)] font-medium"
+                              : "w-fit text-[clamp(.6rem,.65vw,2.5rem)]"
+                          }`}
+                        >
+                          {link.label}
+                        </p>
+                        <div
+                          className={`w-[10%]  ${
+                            link.title ? "hidden" : "block"
+                          }`}
+                        ></div>
+                      </motion.div>
+                    </Link>
+                  ))}
+                  <hr
+                    className={`${
+                      showExtra ? "block" : "hidden"
+                    } my-[calc(.1rem+.1vw)]    text-hover2`}
+                  />
+                  {/* <hr className={` text-hover2 `} /> */}
+                </div>
+              </div>
+            );
+          })}
         </div>
       </section>
     </>

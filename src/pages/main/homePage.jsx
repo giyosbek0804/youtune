@@ -2,7 +2,6 @@ import { Link, Outlet } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import Navbar from "../../navbar/nav";
-import Sidebar from "../../aside/sidebar";
 
 const API_KEY = import.meta.env.VITE_YOUTUBE_API_KEY;
 
@@ -33,11 +32,7 @@ function HomePage() {
   return (
     <>
       <Navbar />
-      <Sidebar />
-  
     </>
   );
 }
 export default HomePage;
-
-
