@@ -40,13 +40,12 @@ import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 
-function Navbar() {
+function Navbar({ expanded, setExpanded }) {
   const [navbarExpanded, setNavbarExpanded] = useState(false);
   const [inputValue, setInputValue] = useState("");
-  const [expandAside, setExpandAside] = useState(false);
+  const [expandAside, setExpandAside] = useState(expanded);
   const [selected, setSelected] = useState("home");
   const [showExtra, setShowExtra] = useState(false);
-
   const location = useLocation();
   function submit(e) {
     e.preventDefault();
@@ -112,42 +111,42 @@ function Navbar() {
           icon: <LuHistory />,
           label: "History",
           selected: false,
-          path: "/history",
+          path: "/you/history",
         },
         {
           id: "playlist",
           icon: <MdOutlinePlaylistPlay />,
           label: "Playlist",
           selected: false,
-          path: "/playlist",
+          path: "/you/playlist",
         },
         {
           id: "yourVideos",
           icon: <BiSolidVideos />,
           label: "Your Videos",
           selected: false,
-          path: "/yourvideos",
+          path: "/you/yourvideos",
         },
         {
           id: "yourCourses",
           icon: <FaGraduationCap />,
           label: "Your Courses",
           selected: false,
-          path: "/yourcourses",
+          path: "/you/yourcourses",
         },
         {
           id: "watchLater",
           icon: <MdOutlineAccessTimeFilled />,
           label: "Watch Later",
           selected: false,
-          path: "/watchlater",
+          path: "/you/watchlater",
         },
         {
           id: "likedVideos",
           icon: <FaThumbsUp />,
           label: "Liked Videos",
           selected: false,
-          path: "/likedvideos",
+          path: "/you/likedvideos",
         },
       ],
     },
@@ -157,13 +156,29 @@ function Navbar() {
       alwaysVisible: showExtra,
       links: [
         {
-          id: "subscriptions",
+          id: "subscriptionsList",
           icon: <LuHistory />,
           label: "Subscriptions   >",
           selected: false,
           title: true,
           message: true,
-          path: "/subscriptions",
+          path: "/subscriptionslist",
+        },
+        {
+          id: "pedro",
+          icon: <LuHistory />,
+          label: "Pedrotech",
+          selected: false,
+          message: true,
+          path: "/subscriptionslist/pedrotech",
+        },
+        {
+          id: "mkbhd",
+          icon: <LuHistory />,
+          label: "Pedrotech",
+          selected: false,
+          message: true,
+          path: "/subscriptionslist/mkbhd",
         },
       ],
     },
@@ -177,49 +192,49 @@ function Navbar() {
           icon: <IoMusicalNotes />,
           label: "Music",
           selected: false,
-          path: "/music",
+          path: "/explore/music",
         },
         {
           id: "live",
           icon: <HiSignal />,
           label: "Live",
           selected: false,
-          path: "/live",
+          path: "/explore/live",
         },
         {
           id: "gaming",
           icon: <GiConsoleController />,
           label: "Gaming",
           selected: false,
-          path: "/gaming",
+          path: "/explore/gaming",
         },
         {
           id: "news",
           icon: <FaRegNewspaper />,
           label: "News",
           selected: false,
-          path: "/news",
+          path: "/explore/news",
         },
         {
           id: "sport",
           icon: <FaTrophy />,
           label: "Sport",
           selected: false,
-          path: "/sport",
+          path: "/explore/sport",
         },
         {
           id: "learning",
           icon: <FaRegLightbulb />,
           label: "Learning",
           selected: false,
-          path: "/live",
+          path: "/explore/learning",
         },
         {
           id: "fashion",
           icon: <GiHanger />,
           label: "Fashion & beauty",
           selected: false,
-          path: "/fashion",
+          path: "/explore/fashion",
         },
       ],
     },
@@ -252,7 +267,7 @@ function Navbar() {
         {
           id: "settings",
           icon: <GiGears />,
-          label: "YouTune Studio ",
+          label: "Settings ",
           selected: false,
           path: "/studio",
         },
@@ -306,6 +321,7 @@ function Navbar() {
               onClick={() => {
                 setExpandAside((prev) => !prev);
                 setShowExtra((prev) => !prev);
+                setExpanded((prev) => !prev);
               }}
             />
           </div>
@@ -420,7 +436,15 @@ function Navbar() {
                 </p>
                 <div className=" flex-row md:flex-col justify-between px-[calc(1rem+1vw)] md:px-0 flex w-full">
                   {section.links.map((link) => (
-                    <Link key={link.id} to={link.path}>
+                    <Link
+                      key={link.id}
+                      to={link.path}
+                      className={`${
+                        link.id === "youSmall"
+                          ? `${expandAside ? "hidden" : "block"}`
+                          : "block"
+                      } `}
+                    >
                       <motion.div
                         onClick={() => setSelected(link.id)}
                         layout
@@ -432,10 +456,10 @@ function Navbar() {
                  
                    ${
                      expandAside
-                       ? `w-[calc(7.8rem+7vw)] justify-between py-[calc(.2rem+.2vw)] px-[calc(.5rem+.5vw)]  ${
+                       ? `w-[calc(7.8rem+7vw)] justify-between  py-[calc(.2rem+.2vw)] px-[calc(.5rem+.5vw)]  ${
                            selected === link.id ? "bg-hover" : ""
                          }`
-                       : "w-[calc(2rem+2.7vw)] justify-center py-[calc(.5rem+.5vw)]"
+                       : "w-[calc(2rem+2.7vw)] justify-center   py-[calc(.5rem+.5vw)]"
                    }`}
                       >
                         <motion.div
@@ -454,14 +478,14 @@ function Navbar() {
                         </motion.div>
 
                         <p
-                          className={`  text-left  ${
+                          className={`   ${
                             link.title
                               ? "w-full text-[clamp(1rem,1vw,3.8rem)] "
                               : ""
                           } ${
                             expandAside
                               ? "w-[75%] pl-[5%] text-[clamp(.9rem,.9vw,3.5rem)] font-medium"
-                              : "w-fit text-[clamp(.6rem,.65vw,2.5rem)]"
+                              : "w-full text-center text-[clamp(.6rem,.65vw,2.5rem)] "
                           }`}
                         >
                           {link.label}
