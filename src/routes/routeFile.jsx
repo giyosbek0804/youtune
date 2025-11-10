@@ -4,6 +4,7 @@ import HomePage from "../pages/main/homePage";
 import Content from "../pages/main/content";
 import Subscriptions from "../pages/subscriptions/channels";
 import You from "../pages/main/you";
+import SubscriptionVideos from "../pages/subscriptions/channelVideos";
 import History from "../pages/user info page/history";
 import UserActivity from "../pages/user info page/userActivity";
 import LikedVideos from "../pages/user info page/likedVideos";
@@ -24,6 +25,7 @@ import News from "../pages/explore/news";
 import Sports from "../pages/explore/sports";
 import YouTuneKids from "../pages/more youtube products/youtubeKids";
 import YouTuneStudio from "../pages/more youtube products/youtubeStudio";
+import VideoPlayer from "../components/videoPlayer";
 function Pathes() {
   return (
     <BrowserRouter>
@@ -31,7 +33,7 @@ function Pathes() {
         <Route path="/" element={<HomePage />}>
           <Route index element={<Content />} />
           <Route path="shorts" element={<Shorts />} />
-          <Route path="subscriptions" element={<Subscriptions />} />
+          <Route path="subscriptions" element={<SubscriptionVideos />} />
           <Route path="you" element={<UserActivity />}>
             <Route index element={<You />} />
             <Route path="history" element={<History />} />
@@ -56,6 +58,7 @@ function Pathes() {
           </Route>
           <Route path="kids" element={<YouTuneKids />} />
           <Route path="studio" element={<YouTuneStudio />} />
+          <Route path="/video/:id" element={<VideoPlayer />} />
         </Route>
       </Routes>
     </BrowserRouter>

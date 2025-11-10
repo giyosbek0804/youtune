@@ -314,115 +314,131 @@ function Navbar({ expanded, setExpanded }) {
   return (
     <>
       {/* navbar section */}
-      <section className=" fixed top-0    z-10 bg-background w-full flex items-center justify-between pr-[calc(.5rem+1vw)]  lg:pr-[calc(1rem+1.5vw)] pl-[calc(.6rem+1vw)]  py-[calc(.2rem+.5vw)]  text-white">
-        <div className="flex items-center gap-[calc(.7rem+1vw)]">
-          <div className="icons hidden md:block ">
-            <FaBars
-              onClick={() => {
-                setExpandAside((prev) => !prev);
-                setShowExtra((prev) => !prev);
-                setExpanded((prev) => !prev);
-              }}
-            />
+      <section className=" fixed top-0  bg-blur  z-10 bg-background  w-full  text-white">
+        <div className="w-full   flex items-center justify-between pr-[calc(.5rem+1vw)]  lg:pr-[calc(.9rem+1vw)] pl-[calc(.6rem+1vw)]  py-[calc(.2rem+.5vw)]  ">
+          {/* icons part */}
+
+          <div className="flex items-center gap-[calc(.7rem+1vw)]">
+            <div className="icons hidden md:block ">
+              <FaBars
+                onClick={() => {
+                  setExpandAside((prev) => !prev);
+                  setShowExtra((prev) => !prev);
+                  setExpanded((prev) => !prev);
+                }}
+              />
+            </div>
+            <Link to="/">
+              <abbr
+                title="YouTune Home"
+                className="flex items-center  gap-1 cursor-pointer no-underline"
+              >
+                <img
+                  src="/images/youtube logo.png"
+                  alt="logo"
+                  className="w-[calc(1.4rem+1.2vw)]  lg:w-[calc(1rem+1.1vw)] h-auto "
+                />
+                <p className="text-[clamp(1.23rem,1.3vw,3rem)] font-bold">
+                  YouTune
+                </p>
+              </abbr>
+            </Link>
           </div>
 
-          <abbr
-            title="YouTune Home"
-            className="flex items-center  gap-1 cursor-pointer no-underline"
+          {/* search part */}
+          <div
+            className={`flex items-center  ml-[calc(2rem+3vw)]   justify-between duration-250 gap-[calc(.5rem+.5vw)] md:w-[calc(25rem+28vw)]  md:max-w-[45.5vw] ${
+              navbarExpanded
+                ? "w-full  absolute md:relative left-0 top-0 h-full  md:left-auto bg-background  px-[calc(.7rem+.6vw)]"
+                : "w-fit md:px-[calc(.7rem+.6vw)]"
+            }  `}
           >
-            <img
-              src="/images/youtube logo.png"
-              alt="logo"
-              className="w-[calc(1.4rem+1.2vw)]  lg:w-[calc(1rem+1.1vw)] h-auto "
+            <FaArrowLeft
+              onClick={() => setNavbarExpanded(false)}
+              className={`icons ${
+                navbarExpanded ? "block md:hidden" : "hidden"
+              }`}
             />
-            <p className="text-[clamp(1.23rem,1.5vw,3rem)] font-bold">
-              YouTune
-            </p>
-          </abbr>
-        </div>
+            <form
+              onSubmit={submit}
+              className={`flex items-center    border-none     w-full max-w-[calc(20rem+25vw)]   ${
+                navbarExpanded ? "border-2 " : "border-0 md:border-2"
+              } rounded-3xl  `}
+            >
+              <input
+                value={inputValue}
+                type="search"
+                onChange={(e) => setInputValue(e.target.value)}
+                className={`outline-none border-hover border focus-within:border-blue-600  py-[calc(.1rem+.35vw)] rounded-l-3xl pl-[calc(.6rem+.8vw)] pr-2 md:block text-[clamp(1rem,1vw,3rem)]     md:w-full  ${
+                  navbarExpanded ? "w-full block " : "w-0  hidden "
+                } `}
+                placeholder="Search"
+              />
+              <abbr title="Search">
+                <button
+                  className={` flex items-center justify-center md:border border-hover  cursor-pointer py-[calc(.15rem+.3vw)]   rounded-br-3xl rounded-tr-3xl ${
+                    navbarExpanded
+                      ? "bg-hover w-[calc(3rem+2vw)]"
+                      : "md:w-[calc(3rem+2vw)] md:bg-hover"
+                  }`}
+                >
+                  <LuSearch
+                    onClick={() => setNavbarExpanded(true)}
+                    className="text-[clamp(1.5rem,1.5vw,4rem)]  "
+                  />
+                </button>
+              </abbr>
+            </form>
 
-        {/* search part */}
-        <div
-          className={`flex items-center   justify-between duration-250 gap-[calc(1rem+1vw)] md:w-[calc(25rem+28vw)]  md:max-w-[55vw] ${
-            navbarExpanded
-              ? "w-full  absolute md:relative left-0 top-0 h-full  md:left-auto bg-background  px-[calc(.7rem+.6vw)]"
-              : "w-fit md:px-[calc(.7rem+.6vw)]"
-          }  `}
-        >
-          <FaArrowLeft
-            onClick={() => setNavbarExpanded(false)}
-            className={`icons ${navbarExpanded ? "block md:hidden" : "hidden"}`}
-          />
-          <form
-            onSubmit={submit}
-            className={`flex items-center    border-none     w-full max-w-[calc(20rem+25vw)]   ${
-              navbarExpanded ? "border-2 " : "border-0 md:border-2"
-            } rounded-3xl  `}
-          >
-            <input
-              value={inputValue}
-              type="text"
-              onChange={(e) => setInputValue(e.target.value)}
-              className={`outline-none border-hover border focus-within:border-blue-600  py-[calc(.1rem+.35vw)] rounded-l-3xl pl-[calc(.6rem+.8vw)]  md:block text-[clamp(1rem,1.1vw,3rem)]     md:w-full  ${
-                navbarExpanded ? "w-full block " : "w-0  hidden "
-              } `}
-              placeholder="Search"
-            />
-            <abbr title="Search">
-              <button
-                className={` flex items-center justify-center md:border border-hover  cursor-pointer py-[calc(.15rem+.335vw)]   rounded-br-3xl rounded-tr-3xl ${
-                  navbarExpanded
-                    ? "bg-hover w-[calc(3rem+2vw)]"
-                    : "md:w-[calc(3rem+2vw)] md:bg-hover"
+            <button>
+              <abbr
+                title="Voice Search"
+                className={`icons bg-hover outline-none rounded-full p-2 lg:block ${
+                  navbarExpanded ? "block" : "hidden md:block"
                 }`}
               >
-                <LuSearch
-                  onClick={() => setNavbarExpanded(true)}
-                  className="text-[clamp(1.5rem,1.5vw,4rem)]  "
-                />
-              </button>
-            </abbr>
-          </form>
+                <FaMicrophone />
+              </abbr>
+            </button>
+          </div>
 
-          <button>
-            <abbr
-              title="Voice Search"
-              className={`icons bg-hover outline-none rounded-full p-2 lg:block ${
-                navbarExpanded ? "block" : "hidden md:block"
-              }`}
-            >
-              <FaMicrophone />
+          {/* account */}
+          <div className="hidden  md:flex items-center gap-[calc(.8rem+1vw)] ">
+            <button className="flex  items-center  rounded-2xl border-none bg-hover hover:bg-hover2 gap-0.5 text-[clamp(.9rem,.9vw,3rem)] py-[calc(.15rem+.2vw)] px-[calc(.3rem+.3vw)] cursor-pointer   duration-200">
+              <FiPlus className="text-[clamp(1.5rem,1.5vw,4rem)]" />
+              Create
+            </button>
+            <abbr title="Notifications" className="icons">
+              <FaRegBell className="" />
             </abbr>
-          </button>
+            <img
+              className="h-auto w-[calc(1.2rem+1.05vw)] rounded-full  cursor-pointer"
+              src="/images/user-image.jpg"
+              alt="user profile image"
+            />
+          </div>
         </div>
-
-        {/* account */}
-        <div className="hidden md:flex items-center gap-[calc(.8rem+1vw)] ">
-          <button className="flex  items-center  rounded-2xl border-none bg-hover hover:bg-hover2 gap-0.5 py-[calc(.15rem+.2vw)] px-[calc(.3rem+.3vw)] cursor-pointer   duration-200">
-            <FiPlus className="text-[clamp(1.5rem,1.7vw,4rem)]" />
-            Create
-          </button>
-          <abbr title="Notifications" className="icons">
-            <FaRegBell className="" />
-          </abbr>
-          <img
-            className="h-auto w-[calc(1.4rem+1.1vw)] rounded-full  cursor-pointer"
-            src="/images/user-image.jpg"
-            alt="user profile image"
-          />
+        <div
+          className={` border fixed w-full bg-black  ${
+            expandAside
+              ? "md:ml-[calc(8.7rem+8vw)] "
+              : "md:ml-[calc(2.5rem+3vw)]  "
+          }`}
+        >
+          hi
         </div>
       </section>
 
       {/* aside section */}
       <section
-        className={` fixed  left-0 bottom-0 overflow-auto md:pt-[calc(2rem+2.5vw)]   md:bottom-auto md:top-0 h-fit md:h-screen  transition-all duration-300 
+        className={` fixed    left-0 bottom-0 overflow-auto md:pt-[calc(1rem+1.9vw)] top-auto  md:bottom-auto md:top-0 h-fit md:h-screen  transition-all duration-300 
   ${
     expandAside
       ? "md:w-[calc(8.7rem+8vw)] w-full"
       : "md:w-[calc(2.5rem+3vw)] w-[100%] "
-  } bg-background`}
+  } bg-background bg-blur`}
       >
-        <div className="flex   flex-row md:flex-col  items-center justify-between px-2  md:p-4">
+        <div className="flex  flex-row md:flex-col  items-center justify-between  px-2  md:p-4">
           {asideData.map((section) => {
             return (
               <div
@@ -434,12 +450,12 @@ function Navbar({ expanded, setExpanded }) {
                 <p className="px-[calc(.5rem+.5vw)]  mb-[calc(.3rem+.2vw)] font-black text-[clamp(1rem,1vw,3.8rem)] ">
                   {section.title}
                 </p>
-                <div className=" flex-row md:flex-col justify-between px-[calc(1rem+1vw)] md:px-0 flex w-full">
+                <div className=" flex-row  md:flex-col justify-between  md:px-0 flex w-full">
                   {section.links.map((link) => (
                     <Link
                       key={link.id}
                       to={link.path}
-                      className={`${
+                      className={` ${
                         link.id === "youSmall"
                           ? `${expandAside ? "hidden" : "block"}`
                           : "block"
@@ -448,7 +464,7 @@ function Navbar({ expanded, setExpanded }) {
                       <motion.div
                         onClick={() => setSelected(link.id)}
                         layout
-                        className={`  ${
+                        className={`  min-w-fit ${
                           link.title
                             ? "flex-row-reverse  text-shadow-2xs text-shadow-white justify-start items-start "
                             : ""
@@ -503,7 +519,7 @@ function Navbar({ expanded, setExpanded }) {
                       showExtra ? "block" : "hidden"
                     } my-[calc(.1rem+.1vw)]    text-hover2`}
                   />
-                  {/* <hr className={` text-hover2 `} /> */}
+
                 </div>
               </div>
             );

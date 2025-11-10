@@ -1,12 +1,16 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
-import App from "./App.jsx";
 import Pathes from "./routes/routeFile.jsx";
+import { GoogleOAuthProvider } from "@react-oauth/google";
+import { YouTubeProvider } from "./youtuneContext.jsx";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <Pathes />
-    {/* <App /> */}
+    <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
+      <YouTubeProvider>
+        <Pathes />
+      </YouTubeProvider>
+    </GoogleOAuthProvider>
   </StrictMode>
 );

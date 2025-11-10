@@ -10,6 +10,7 @@
 @theme {
   --breakpoint-mn: 360px;
   --breakpoint-sm: 480px;
+  --breakpoint-xs: 600px;
   --breakpoint-md: 768px;
   --breakpoint-lg: 976px;
   --breakpoint-xl: 1200px;
@@ -43,7 +44,7 @@
 @media (prefers-color-scheme: dark) {
   @theme {
     --color-surface: #181818;
-    --color-background: #0f0f0f;
+    --color-background: #0f0f0fe9;
     --color-primary1: #ffffff;
     --color-secondary2: #aaaaaa;
     --color-accent: #ff4b4b;
@@ -53,4 +54,7 @@
   :root {
     background-color: var(--color-background);
   }
+}
+.bg-blur {
+  backdrop-filter: blur(10px);
 }
