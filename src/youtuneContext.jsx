@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
 
 const YouTubeContext = createContext();
 
@@ -6,7 +6,30 @@ export const YouTubeProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(null);
   const [subscriptions, setSubscriptions] = useState([]);
-  const [videos, setVideos] = useState([]);
+  const [likes, setLikes] = useState([]);
+
+  // Restore session from localStorage on mount
+  useEffect(() => {
+    const storedToken = localStorage.getItem("google_token");
+    if (!storedToken) return;
+
+    setToken(storedToken);
+
+    // Restore subscriptions and likes from localStorage
+    const storedSubs = localStorage.getItem("subscriptions");
+    if (storedSubs) setSubscriptions(JSON.parse(storedSubs));
+
+    const storedLikes = localStorage.getItem("likes");
+    if (storedLikes) setLikes(JSON.parse(storedLikes));
+
+    // Fetch user info
+    fetch("https://www.googleapis.com/oauth2/v3/userinfo", {
+      headers: { Authorization: `Bearer ${storedToken}` },
+    })
+      .then((res) => res.json())
+      .then(setUser)
+      .catch(console.error);
+  }, []);
 
   return (
     <YouTubeContext.Provider
@@ -17,8 +40,8 @@ export const YouTubeProvider = ({ children }) => {
         setToken,
         subscriptions,
         setSubscriptions,
-        videos,
-        setVideos,
+        likes,
+        setLikes,
       }}
     >
       {children}

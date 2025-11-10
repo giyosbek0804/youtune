@@ -1,26 +1,20 @@
 import { useYouTube } from "../../youtuneContext";
+import React, { useEffect, useState } from "react";
 
 function SubscriptionList() {
-  const { subscriptions } = useYouTube();
-  console.log(subscriptions + "hh");
+   const { subscriptions } = useYouTube();
 
-  return (
-    <>
-      <h1>All channels </h1>
-      {subscriptions.map((sub) => (
-        <div key={sub.id} className="bg-gray-900 p-2 rounded-lg shadow">
-          <img
-            src={sub.snippet.thumbnails.default.url}
-            alt={sub.snippet.title}
-            className="rounded-lg"
-          />
-          <p className="text-sm mt-2">{sub.snippet.title}</p>
-          <p>{sub}</p>
-          
-        </div>
-        
-      ))}
-    </>
-  );
+   return (
+     <div style={{ padding: "20px" }}>
+       <h2>Subscriptions</h2>
+       {subscriptions.length === 0 && <p>No subscriptions found.</p>}
+       <ul>
+         {subscriptions.map((sub) => (
+           <li key={sub.id}>{sub.snippet.title}</li>
+         ))}
+       </ul>
+     </div>
+   );
+
 }
 export default SubscriptionList;

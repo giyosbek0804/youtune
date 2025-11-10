@@ -1,97 +1,133 @@
 import { useEffect } from "react";
 import { useGoogleLogin, googleLogout } from "@react-oauth/google";
 import { useYouTube } from "../../youtuneContext";
+import { Link } from "react-router-dom";
 
 function You() {
-  // const {
-  //   user,
-  //   setUser,
-  //   token,
-  //   setToken,
-  //   subscriptions,
-  //   setSubscriptions,
-  //   videos,
-  //   setVideos,
-  // } = useYouTube();
+  const {
+    user,
+    setUser,
+    token,
+    setToken,
+    subscriptions,
+    setSubscriptions,
+    likes,
+    setLikes,
+  } = useYouTube();
+  console.log(subscriptions);
 
-  // const login = useGoogleLogin({
-  //   scope:
-  //     "https://www.googleapis.com/auth/youtube.readonly https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email",
-  //   onSuccess: (res) => setToken(res.access_token),
-  //   flow: "implicit",
-  // });
+  // Fetch subscriptions
+  const fetchSubscriptions = (accessToken) => {
+    fetch(
+      "https://www.googleapis.com/youtube/v3/subscriptions?part=snippet&mine=true&maxResults=50",
+      { headers: { Authorization: `Bearer ${accessToken}` } }
+    )
+      .then((res) => res.json())
+      .then((data) => {
+        if (!data.items) return;
 
-  // useEffect(() => {
-  //   if (!token) return;
-  //   fetch("https://www.googleapis.com/oauth2/v3/userinfo", {
-  //     headers: { Authorization: `Bearer ${token}` },
-  //   })
-  //     .then((res) => res.json())
-  //     .then(setUser);
-  // }, [token]);
+        setSubscriptions(data.items);
 
-  // useEffect(() => {
-  //   if (!token) return;
-  //   fetch(
-  //     "https://www.googleapis.com/youtube/v3/subscriptions?part=snippet&mine=true&maxResults=5",
-  //     { headers: { Authorization: `Bearer ${token}` } }
-  //   )
-  //     .then((res) => res.json())
-  //     .then((data) => setSubscriptions(data.items || []));
-  // }, [token]);
+        localStorage.setItem("subscriptions", JSON.stringify(data.items));
+      })
+      .catch(console.error);
+  };
 
-  // useEffect(() => {
-  //   if (!subscriptions.length || !token) return;
+  // Fetch liked videos
+  const fetchLikes = (accessToken) => {
+    fetch(
+      "https://www.googleapis.com/youtube/v3/playlists?part=snippet&mine=true",
+      {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      }
+    )
+      .then((res) => res.json())
+      .then((data) => {
+        if (!data.items) return;
+        const likedPlaylist = data.items.find(
+          (pl) => pl.snippet.title.toLowerCase() === "liked videos"
+        );
+        if (!likedPlaylist) return;
 
-  //   const fetchVideos = async () => {
-  //     const results = [];
-  //     for (const sub of subscriptions.slice(0, 3)) {
-  //       const channelId = sub.snippet.resourceId.channelId;
-  //       const res = await fetch(
-  //         `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${channelId}&maxResults=3&order=date&type=video`,
-  //         { headers: { Authorization: `Bearer ${token}` } }
-  //       );
-  //       const data = await res.json();
-  //       if (data.items) results.push(...data.items);
-  //     }
-  //     setVideos(results);
-  //   };
+        fetch(
+          `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${likedPlaylist.id}&maxResults=50`,
+          { headers: { Authorization: `Bearer ${accessToken}` } }
+        )
+          .then((res) => res.json())
+          .then((data) => {
+            if (!data.items) return;
+            setLikes(data.items);
+            localStorage.setItem("likes", JSON.stringify(data.items));
+          });
+      })
+      .catch(console.error);
+  };
 
-  //   fetchVideos();
-  // }, [subscriptions, token]);
+  // Google login
+  const login = useGoogleLogin({
+    flow: "implicit",
+    scope:
+      "https://www.googleapis.com/auth/youtube.readonly https://www.googleapis.com/auth/youtube https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email",
+    onSuccess: (tokenResponse) => {
+      const accessToken = tokenResponse.access_token;
+      setToken(accessToken);
+      localStorage.setItem("google_token", accessToken);
 
-  // const handleLogout = () => {
-  //   googleLogout();
-  //   setUser(null);
-  //   setToken(null);
-  //   setSubscriptions([]);
-  //   setVideos([]);
-  // };
+      // fetch user info
+      fetch("https://www.googleapis.com/oauth2/v3/userinfo", {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      })
+        .then((res) => res.json())
+        .then(setUser);
+
+      fetchSubscriptions(accessToken);
+      fetchLikes(accessToken);
+    },
+  });
+
+  const handleLogout = () => {
+    googleLogout();
+    setUser(null);
+    setToken(null);
+    setSubscriptions([]);
+    setLikes([]);
+    localStorage.clear();
+  };
 
   return (
-    // <div className="text-white flex flex-col items-center">
-    //   {!user ? (
-    //     <button
-    //       onClick={login}
-    //       className="bg-red-600 px-6 py-2 rounded-md mt-6"
-    //     >
-    //       Login with Google
-    //     </button>
-    //   ) : (
-    //     <>
-    //       <h2 className="mt-6 text-xl font-semibold">Welcome {user.name}</h2>
-    //       <button
-    //         onClick={handleLogout}
-    //         className="bg-gray-700 px-4 py-1 mt-4 rounded-md"
-    //       >
-    //         Logout
-    //       </button>
-    //     </>
-    //   )}
-    // </div>
-    <>
-    <h1>you page</h1>
-    </>
+    <div className="">
+      {!user ? (
+        <button onClick={() => login()}>Login with Google</button>
+      ) : (
+        <>
+          <h2>{user.name}</h2>
+          <img src={user.picture} alt="Profile" />
+          <p>{user.email}</p>
+          <button onClick={handleLogout}>Logout</button>
+          <h3>Subscriptions</h3>
+          <div>
+            {subscriptions.map((sub) => (
+              <div key={sub.id} className="border w-full overflow-hidden">
+                <img
+                  src={sub.snippet.thumbnails.medium.url}
+                  alt={sub.snippet.title}
+                  className="w-[calc(2.5rem+2vw)] h-[calc(2.5rem+2vw)] rounded-full"
+                />
+                <p>{sub.snippet.title}</p>
+              </div>
+            ))}
+          </div>
+          <h3>Liked Videos</h3>
+          <ul>
+            {likes.map((video) => (
+              <li key={video.id}>{video.snippet.title}</li>
+            ))}
+          </ul>
+          <Link to="/subscriptionslist">Subscriptions Only</Link> |{" "}
+          <Link to="/you/likedvideos">Likes Only</Link>
+        </>
+      )}
+    </div>
   );
 }
 
