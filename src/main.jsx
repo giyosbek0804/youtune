@@ -7,7 +7,7 @@ import { YouTubeProvider } from "./youtuneContext.jsx";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
+    <GoogleOAuthProvider clientId="629199534004-8mtpqdn12sdibbe4qv9a5pkmv2041rnj.apps.googleusercontent.com">
       <YouTubeProvider>
         <Pathes />
       </YouTubeProvider>

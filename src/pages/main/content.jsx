@@ -3,7 +3,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { formatDistanceToNow } from "date-fns";
 
-const API_KEY = import.meta.env.VITE_YOUTUBE_API_KEY;
+const API_KEY = "AIzaSyCrXTgIWT8nQVb07EIB7rjcnTtfzqGQ4ac";
 
 function Content() {
   const [videos, setVideos] = useState([]);
