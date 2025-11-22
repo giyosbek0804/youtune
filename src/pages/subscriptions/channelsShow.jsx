@@ -4,7 +4,7 @@ function ChannelsShow() {
   const { channelId } = useParams();
   return (
     <>
-      <h1>channel name {channelId}</h1>
+      <h1>channel name is {channelId}</h1>
     </>
   );
 }

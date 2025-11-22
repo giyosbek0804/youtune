@@ -8,4 +8,8 @@
   }
 }
 
+.filters {
+  scrollbar-width: none;
+  /* backdrop-filter: blur(10px ) !important; */
+}
 

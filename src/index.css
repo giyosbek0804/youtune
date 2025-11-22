@@ -45,11 +45,11 @@
   @theme {
     --color-surface: #181818;
     --color-background: #0f0f0fe9;
-    --color-primary1: #ffffff;
+    --color-primary1: #f1f1f1;
     --color-secondary2: #aaaaaa;
     --color-accent: #ff4b4b;
     --color-border: #303030;
-    --color-hover: rgba(105, 105, 105, 0.3);
+    --color-hover: #272727;
   }
   :root {
     background-color: var(--color-background);

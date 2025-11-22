@@ -1,20 +1,40 @@
+import { FaCircleCheck } from "react-icons/fa6";
 import { useYouTube } from "../../youtuneContext";
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 function SubscriptionList() {
-   const { subscriptions } = useYouTube();
+  const { subscriptions } = useYouTube();
 
-   return (
-     <div style={{ padding: "20px" }}>
-       <h2>Subscriptions</h2>
-       {subscriptions.length === 0 && <p>No subscriptions found.</p>}
-       <ul>
-         {subscriptions.map((sub) => (
-           <li key={sub.id}>{sub.snippet.title}</li>
-         ))}
-       </ul>
-     </div>
-   );
-
+  return (
+    <div className="w-full">
+      <h2>Subscriptions</h2>
+      {subscriptions.length === 0 && <p>No subscriptions found.</p>}
+      <ul className="border ">
+        {subscriptions.map((sub) => (
+          <Link to={`/subscriptionslist/${sub.snippet.title}`}
+            key={sub.id}
+            className=" flex items-center border w-[80%] m-auto my-[calc(.3rem+.1vw)] py-[calc(.3rem+.3vw)] pl-[calc(.6rem+1vw)] pr-[calc(.6rem+.6vw)]"
+          >
+            <img
+              src={sub.snippet.thumbnails.medium.url}
+              alt={sub.snippet.title}
+              className="w-[calc(2.5rem+2.2vw)] h-[calc(2.5rem+2.2vw)] md:w-[calc(4rem+4vw)] md:h-[calc(4rem+4vw)]  rounded-full mr-[calc(.5rem+.7vw)]"
+            />
+            <abbr title={sub.snippet.title} className="no-underline">
+              <li className="line-clamp-1 text-[clamp(1.02rem,1.15vw,2.6rem)] flex items-center ">
+                {sub.snippet.title}
+                <abbr title="Verified">
+                  <span className="text-[clamp(.5rem,.8vw,1.2rem)] cursor-pointer ml-[calc(.2rem+.1vw)] text-secondary2 hidden md:block">
+                    <FaCircleCheck />
+                  </span>
+                </abbr>
+              </li>
+            </abbr>
+          </Link>
+        ))}
+      </ul>
+    </div>
+  );
 }
 export default SubscriptionList;

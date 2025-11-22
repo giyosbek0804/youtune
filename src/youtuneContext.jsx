@@ -7,6 +7,7 @@ export const YouTubeProvider = ({ children }) => {
   const [token, setToken] = useState(null);
   const [subscriptions, setSubscriptions] = useState([]);
   const [likes, setLikes] = useState([]);
+  const [filter, setFilter] = useState("Sports");
 
   // Restore session from localStorage on mount
   useEffect(() => {
@@ -42,6 +43,8 @@ export const YouTubeProvider = ({ children }) => {
         setSubscriptions,
         likes,
         setLikes,
+        filter, 
+        setFilter,
       }}
     >
       {children}

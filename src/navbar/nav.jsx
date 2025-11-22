@@ -28,7 +28,12 @@ import {
 } from "react-icons/md";
 import { GiConsoleController, GiGears } from "react-icons/gi";
 import { HiSignal } from "react-icons/hi2";
-import { IoFlagSharp, IoHome } from "react-icons/io5";
+import {
+  IoChevronBackOutline,
+  IoChevronForward,
+  IoFlagSharp,
+  IoHome,
+} from "react-icons/io5";
 import { IoMusicalNotes } from "react-icons/io5";
 import { BiSolidVideos } from "react-icons/bi";
 import { FaArrowLeft, FaBars, FaMicrophone, FaRegBell } from "react-icons/fa6";
@@ -38,6 +43,7 @@ import "../index.css";
 import "./nav.css";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
+import { useYouTube } from "../youtuneContext";
 import { Link, useLocation } from "react-router-dom";
 
 function Navbar({ expanded, setExpanded }) {
@@ -47,6 +53,8 @@ function Navbar({ expanded, setExpanded }) {
   const [selected, setSelected] = useState("home");
   const [showExtra, setShowExtra] = useState(false);
   const location = useLocation();
+  const { subscriptions } = useYouTube();
+  const [filterSelector, setFilterSelector] = useState("all");
   function submit(e) {
     e.preventDefault();
     if (inputValue.trim() === "") {
@@ -164,22 +172,6 @@ function Navbar({ expanded, setExpanded }) {
           message: true,
           path: "/subscriptionslist",
         },
-        {
-          id: "pedro",
-          icon: <LuHistory />,
-          label: "Pedrotech",
-          selected: false,
-          message: true,
-          path: "/subscriptionslist/pedrotech",
-        },
-        {
-          id: "mkbhd",
-          icon: <LuHistory />,
-          label: "Pedrotech",
-          selected: false,
-          message: true,
-          path: "/subscriptionslist/mkbhd",
-        },
       ],
     },
     {
@@ -295,7 +287,69 @@ function Navbar({ expanded, setExpanded }) {
       ],
     },
   ];
+  const videoFilters = [
+    {
+      filter: "all",
+    },
+    {
+      filter: "films",
+    },
+    {
+      filter: "cars",
+    },
+    {
+      filter: "music",
+    },
+    {
+      filter: "animals",
+    },
+    {
+      filter: "sports",
+    },
+    {
+      filter: "gaming",
+    },
+    {
+      filter: "blogs",
+    },
+    {
+      filter: "comedy",
+    },
+    {
+      filter: "entertainment",
+    },
+    {
+      filter: "news",
+    },
+    {
+      filter: "style",
+    },
+    {
+      filter: "science",
+    },
+  ];
+  const { filter, setFilter } = useYouTube();
 
+  const filters = videoFilters.map((filter) => {
+    return { ...filter, id: filter.filter.toLowerCase(), selected: false };
+  });
+
+  subscriptions.forEach((sub) => {
+    asideData[2].links.push({
+      id: sub.snippet.title,
+      icon: (
+        <img
+          src={sub.snippet.thumbnails.medium.url}
+          className="w-[calc(.5rem+1.2vw)] h-auto rounded-full"
+          alt={sub.title}
+        />
+      ),
+      label: sub.snippet.title,
+      selected: false,
+      message: true,
+      path: `/subscriptionslist/${sub.snippet.title}`,
+    });
+  });
   useEffect(() => {
     // Find the section that contains the current path
     const matchedSection = asideData.find((section) =>
@@ -403,7 +457,7 @@ function Navbar({ expanded, setExpanded }) {
           </div>
 
           {/* account */}
-          <div className="hidden  md:flex items-center gap-[calc(.8rem+1vw)] ">
+          <div className="hidden  md:flex  items-center gap-[calc(.8rem+1vw)] ">
             <button className="flex  items-center  rounded-2xl border-none bg-hover hover:bg-hover2 gap-0.5 text-[clamp(.9rem,.9vw,3rem)] py-[calc(.15rem+.2vw)] px-[calc(.3rem+.3vw)] cursor-pointer   duration-200">
               <FiPlus className="text-[clamp(1.5rem,1.5vw,4rem)]" />
               Create
@@ -418,23 +472,47 @@ function Navbar({ expanded, setExpanded }) {
             />
           </div>
         </div>
+
+        {/* filter section */}
         <div
-          className={` border fixed w-full bg-black  ${
+          className={` pl-[calc(.25rem+.32vw)]    fixed bg-background backdrop-blur-2xl w-full flex    ${
             expandAside
-              ? "md:ml-[calc(8.7rem+8vw)] "
+              ? "md:ml-[calc(8.2rem+8vw)] "
               : "md:ml-[calc(2.5rem+3vw)]  "
           }`}
         >
-          hi
+          <div
+            className={`  filters      w-full flex overflow-scroll items-center  `}
+          >
+            {filters.map((filter) => {
+              return (
+                <button
+                  key={filter.id}
+                  onClick={() => {
+                    setFilter(filter.filter.toLowerCase());
+                    console.log(filter.filter);
+
+                    setFilterSelector(filter.id);
+                  }}
+                  className={`mx-2 my-[calc(.3rem+.3vw)] capitalize cursor-pointer py-1 whitespace-nowrap duration-200 eas px-2 rounded-[8px] bg-hover ${
+                    filterSelector === filter.id ? "bg-primary1 text-hover" : ""
+                  } `}
+                >
+                  {filter.filter}
+                </button>
+              );
+            })}
+            {/* <div className="absolute right-0 md:mr-[calc(2.5rem+3vw)]  bg-white"> */}
+          </div>
         </div>
       </section>
 
       {/* aside section */}
       <section
-        className={` fixed    left-0 bottom-0 overflow-auto md:pt-[calc(1rem+1.9vw)] top-auto  md:bottom-auto md:top-0 h-fit md:h-screen  transition-all duration-300 
+        className={` fixed       lg:left-0 bottom-0 overflow-auto md:pt-[calc(1rem+1.9vw)] top-auto  md:bottom-auto md:top-0 h-fit md:h-screen  transition-all duration-300 
   ${
     expandAside
-      ? "md:w-[calc(8.7rem+8vw)] w-full"
+      ? "md:w-[calc(8.7rem+8vw)] w-full   "
       : "md:w-[calc(2.5rem+3vw)] w-[100%] "
   } bg-background bg-blur`}
       >
@@ -519,7 +597,6 @@ function Navbar({ expanded, setExpanded }) {
                       showExtra ? "block" : "hidden"
                     } my-[calc(.1rem+.1vw)]    text-hover2`}
                   />
-
                 </div>
               </div>
             );
@@ -529,4 +606,5 @@ function Navbar({ expanded, setExpanded }) {
     </>
   );
 }
+
 export default Navbar;
