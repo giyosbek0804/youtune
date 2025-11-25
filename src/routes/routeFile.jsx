@@ -26,6 +26,8 @@ import Sports from "../pages/explore/sports";
 import YouTuneKids from "../pages/more youtube products/youtubeKids";
 import YouTuneStudio from "../pages/more youtube products/youtubeStudio";
 import VideoPlayer from "../components/videoPlayer";
+import Search from "../pages/main/search";
+
 function Pathes() {
   return (
     <BrowserRouter>
@@ -59,6 +61,7 @@ function Pathes() {
           <Route path="kids" element={<YouTuneKids />} />
           <Route path="studio" element={<YouTuneStudio />} />
           <Route path="/video/:id" element={<VideoPlayer />} />
+          <Route path="/search" element={<Search />} />
         </Route>
       </Routes>
     </BrowserRouter>

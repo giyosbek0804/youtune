@@ -1,7 +1,6 @@
 import axios from "axios";
 import { formatDistanceToNow } from "date-fns";
 import React, { useCallback, useEffect, useState } from "react";
-import { HiOutlineDotsVertical } from "react-icons/hi";
 
 import { useLocation, Link } from "react-router-dom";
 
@@ -9,12 +8,10 @@ const API_KEY = import.meta.env.VITE_YOUTUBE_API_KEY;
 const VideoPlayer = () => {
   const location = useLocation();
   const [relatedVideos, setRelatedVideos] = useState([]);
-  // const [videos, setVideos] = useState([]);
   const { video, videos } = location.state;
+  const videoId = video.id || video.id.videoId;
   const fetchVideos = useCallback(
     async (pageToken = "") => {
-      // setLoading(true);
-
       try {
         const res = await axios.get(
           "https://www.googleapis.com/youtube/v3/videos",
@@ -33,7 +30,6 @@ const VideoPlayer = () => {
         );
 
         const items = res.data.items || [];
-        const newNextPage = res.data.nextPageToken || "";
 
         // Fetch channel thumbnails
         const channelIds = [
@@ -74,7 +70,7 @@ const VideoPlayer = () => {
   useEffect(() => {
     setRelatedVideos([]); // reset when opening new video
     fetchVideos(); // load category videos
-  }, [video.id]);
+  }, [videoId]);
 
   console.log(relatedVideos);
 
@@ -85,7 +81,7 @@ const VideoPlayer = () => {
         <iframe
           allow="autoplay"
           className="w-full  md:rounded-[20px] h-[calc(9.5rem+13vw)]"
-          src={`https://www.youtube.com/embed/${video.id}?autoplay=1&mute=0`}
+          src={`https://www.youtube.com/embed/${videoId}?autoplay=1`}
           title={video.snippet.title}
         ></iframe>
       </div>
@@ -121,7 +117,6 @@ const VideoPlayer = () => {
                 </p>
               </div>
             </div>
-    
           </div>
           <div className="border  ">
             <img src={video.channelThumbnail} alt="" />
@@ -129,7 +124,7 @@ const VideoPlayer = () => {
         </div>
         {relatedVideos.length > 0 ? (
           relatedVideos
-            .filter((v) => v.id !== video.id)
+            .filter((v) => v.id !== videoId)
             .map((v) => (
               <Link
                 key={v.id}

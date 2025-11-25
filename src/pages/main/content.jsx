@@ -14,9 +14,9 @@ function Content() {
   const [hasMore, setHasMore] = useState(true);
 
   const observerRef = useRef(null);
-  const loadingRef = useRef(false); // 🔹 keeps the live loading value
+  const loadingRef = useRef(false); // keeps the live loading value
 
-  const { filter, setFilter } = useYouTube();
+  const { filter, setFilter, searchQuery, setSearchQuery } = useYouTube();
 
   // Sync ref whenever loading changes
   useEffect(() => {
@@ -119,7 +119,7 @@ function Content() {
   // Observer logic
   const lastVideoRef = useCallback(
     (node) => {
-      if (loadingRef.current) return; // use ref instead of stale state
+      if (loadingRef.current) return; // don't observe while loading
 
       if (observerRef.current) observerRef.current.disconnect();
 
