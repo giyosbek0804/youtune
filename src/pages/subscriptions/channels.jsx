@@ -8,13 +8,14 @@ function SubscriptionList() {
 
   return (
     <div className="w-full">
-      <h2>Subscriptions</h2>
+
       {subscriptions.length === 0 && <p>No subscriptions found.</p>}
-      <ul className="border ">
+      <ul className="  pb-[calc(4rem+4vw)] ">
         {subscriptions.map((sub) => (
-          <Link to={`/subscriptionslist/${sub.snippet.title}`}
+          <Link
+            to={`/subscriptionslist/${sub.snippet.title}`}
             key={sub.id}
-            className=" flex items-center border w-[80%] m-auto my-[calc(.3rem+.1vw)] py-[calc(.3rem+.3vw)] pl-[calc(.6rem+1vw)] pr-[calc(.6rem+.6vw)]"
+            className=" flex items-center  w-[100%] m-auto my-[calc(.3rem+.1vw)] py-[calc(.3rem+.3vw)] pl-[calc(.6rem+1vw)] pr-[calc(.6rem+.6vw)]"
           >
             <img
               src={sub.snippet.thumbnails.medium.url}

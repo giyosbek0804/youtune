@@ -369,7 +369,7 @@ function Navbar({ expanded, setExpanded }) {
   return (
     <>
       {/* navbar section */}
-      <section className=" fixed top-0  bg-blur  z-10 bg-background  w-full  text-white">
+      <section className=" fixed top-0 py-[calc(.2rem+.2vw)] bg-blur  z-10 bg-background  w-full  text-white">
         <div className="w-full   flex items-center justify-between pr-[calc(.5rem+1vw)]  lg:pr-[calc(.9rem+1vw)] pl-[calc(.6rem+1vw)]  py-[calc(.2rem+.5vw)]  ">
           {/* icons part */}
 
@@ -394,7 +394,9 @@ function Navbar({ expanded, setExpanded }) {
                   className="w-[calc(1.4rem+1.2vw)]  lg:w-[calc(1rem+1.1vw)] h-auto "
                 />
                 <p className="text-[clamp(1.23rem,1.3vw,3rem)] font-bold">
-                  YouTune
+                  {useLocation().pathname === "/subscriptionslist"
+                    ? "All subscriptions"
+                    : "YouTune"}
                 </p>
               </abbr>
             </Link>
@@ -402,10 +404,10 @@ function Navbar({ expanded, setExpanded }) {
 
           {/* search part */}
           <div
-            className={`flex items-center  ml-[calc(2rem+3vw)]   justify-between duration-250 gap-[calc(.5rem+.5vw)] md:w-[calc(25rem+28vw)]  md:max-w-[45.5vw] ${
+            className={`flex items-center     justify-between duration-250 gap-[calc(.5rem+.5vw)] md:w-[calc(25rem+28vw)]  md:max-w-[45.5vw] ${
               navbarExpanded
-                ? "w-full  absolute md:relative left-0 top-0 h-full  md:left-auto bg-background  px-[calc(.7rem+.6vw)]"
-                : "w-fit md:px-[calc(.7rem+.6vw)]"
+                ? "w-full  absolute md:relative ml-0 left-0 top-0 h-full  md:left-auto bg-[#292929]  px-[calc(.7rem+.6vw)]"
+                : "w-fit md:px-[calc(.7rem+.6vw)] ml-[calc(2rem+3vw)]"
             }  `}
           >
             <FaArrowLeft
@@ -417,15 +419,17 @@ function Navbar({ expanded, setExpanded }) {
             <form
               onSubmit={submit}
               className={`flex items-center    border-none     w-full max-w-[calc(20rem+25vw)]   ${
-                navbarExpanded ? "border-2 " : "border-0 md:border-2"
+                navbarExpanded
+                  ? "border-2 bg-[#383838]"
+                  : "border-0 md:border-2"
               } rounded-3xl  `}
             >
               <input
                 value={inputValue}
                 type="search"
                 onChange={(e) => setInputValue(e.target.value)}
-                className={`outline-none border-hover border focus-within:border-blue-600  py-[calc(.1rem+.35vw)] rounded-l-3xl pl-[calc(.6rem+.8vw)] pr-2 md:block text-[clamp(1rem,1vw,3rem)]     md:w-full  ${
-                  navbarExpanded ? "w-full block " : "w-0  hidden "
+                className={`outline-none border-[#383838] border focus-within:border-blue-600  py-[calc(.1rem+.35vw)] rounded-l-3xl pl-[calc(.6rem+.8vw)] pr-2 md:block text-[clamp(1rem,1vw,3rem)]     md:w-full  ${
+                  navbarExpanded ? "w-full block  " : "w-0  hidden "
                 } `}
                 placeholder="Search"
               />
@@ -433,7 +437,7 @@ function Navbar({ expanded, setExpanded }) {
                 <button
                   className={` flex items-center justify-center md:border border-hover  cursor-pointer py-[calc(.15rem+.3vw)]   rounded-br-3xl rounded-tr-3xl ${
                     navbarExpanded
-                      ? "bg-hover w-[calc(3rem+2vw)]"
+                      ? "bg-[#383838] w-[calc(3rem+2vw)]"
                       : "md:w-[calc(3rem+2vw)] md:bg-hover"
                   }`}
                 >
@@ -449,7 +453,7 @@ function Navbar({ expanded, setExpanded }) {
               <abbr
                 title="Voice Search"
                 className={`icons bg-hover outline-none rounded-full p-2 lg:block ${
-                  navbarExpanded ? "block" : "hidden md:block"
+                  navbarExpanded ? "block bg-[#383838]" : "hidden md:block"
                 }`}
               >
                 <FaMicrophone />
