@@ -55,6 +55,7 @@ function Navbar({ expanded, setExpanded }) {
   const location = useLocation();
   const { subscriptions } = useYouTube();
   const [filterSelector, setFilterSelector] = useState("all");
+  const showFilters = location.pathname === "/";
   function submit(e) {
     e.preventDefault();
     if (inputValue.trim() === "") {
@@ -475,7 +476,9 @@ function Navbar({ expanded, setExpanded }) {
 
         {/* filter section */}
         <div
-          className={` pl-[calc(.25rem+.32vw)]    fixed bg-background backdrop-blur-2xl w-full flex    ${
+          className={` pl-[calc(.25rem+.32vw)]  ${
+            showFilters ? "flex" : "hidden"
+          }   fixed bg-background backdrop-blur-2xl w-full flex    ${
             expandAside
               ? "md:ml-[calc(8.2rem+8vw)] "
               : "md:ml-[calc(2.5rem+3vw)]  "
