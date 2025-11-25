@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useGoogleLogin, googleLogout } from "@react-oauth/google";
 import { useYouTube } from "../../youtuneContext";
 import { Link } from "react-router-dom";
+import { IoIosLogOut } from "react-icons/io";
 
 function You() {
   const {
@@ -14,7 +15,6 @@ function You() {
     likes,
     setLikes,
   } = useYouTube();
-  console.log(subscriptions);
 
   // Fetch subscriptions
   const fetchSubscriptions = (accessToken) => {
@@ -29,36 +29,6 @@ function You() {
         setSubscriptions(data.items);
 
         localStorage.setItem("subscriptions", JSON.stringify(data.items));
-      })
-      .catch(console.error);
-  };
-
-  // Fetch liked videos
-  const fetchLikes = (accessToken) => {
-    fetch(
-      "https://www.googleapis.com/youtube/v3/playlists?part=snippet&mine=true",
-      {
-        headers: { Authorization: `Bearer ${accessToken}` },
-      }
-    )
-      .then((res) => res.json())
-      .then((data) => {
-        if (!data.items) return;
-        const likedPlaylist = data.items.find(
-          (pl) => pl.snippet.title.toLowerCase() === "liked videos"
-        );
-        if (!likedPlaylist) return;
-
-        fetch(
-          `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${likedPlaylist.id}&maxResults=50`,
-          { headers: { Authorization: `Bearer ${accessToken}` } }
-        )
-          .then((res) => res.json())
-          .then((data) => {
-            if (!data.items) return;
-            setLikes(data.items);
-            localStorage.setItem("likes", JSON.stringify(data.items));
-          });
       })
       .catch(console.error);
   };
@@ -81,7 +51,6 @@ function You() {
         .then(setUser);
 
       fetchSubscriptions(accessToken);
-      fetchLikes(accessToken);
     },
   });
 
@@ -90,34 +59,43 @@ function You() {
     setUser(null);
     setToken(null);
     setSubscriptions([]);
-    setLikes([]);
     localStorage.clear();
   };
 
   return (
-    <div className="">
+    <div className=" w-full px-[calc(.95rem+1vw)] ">
       {!user ? (
         <button onClick={() => login()}>Login with Google</button>
       ) : (
         <>
-          <h2>{user.name}</h2>
-          <img src={user.picture} alt="Profile" />
-          <p>{user.email}</p>
-          <button onClick={handleLogout}>Logout</button>
-          <h3>Subscriptions</h3>
-          <div>
-            {subscriptions.map((sub) => (
-              <div key={sub.id} className="border w-full overflow-hidden">
-                <img
-                  src={sub.snippet.thumbnails.medium.url}
-                  alt={sub.snippet.title}
-                  className="w-[calc(2.5rem+2vw)] h-[calc(2.5rem+2vw)] rounded-full"
-                />
-                <p>{sub.snippet.title}</p>
-              </div>
-            ))}
+          <div className="flex gap-2 items-center">
+            <div className="min-w-[calc(4rem+3vw)] ">
+              <img
+                src={user.picture}
+                alt="Profile img"
+                className="rounded-full w-[calc(4rem+3vw)] h-[calc(4rem+3vw)]  "
+              />
+            </div>
+            <div className="">
+              <h2 className="text-[clamp(1.5rem,2.3vw,4rem)] leading-tight font-bold w-fit  text-white">
+                {user.name}
+              </h2>
+              <p className="text-[clamp(.75rem,1vw,2.6rem)] text-secondary2">
+                @{user.email}
+              </p>
+            </div>
           </div>
-          <h3>Liked Videos</h3>
+          <div className="flex flex-col gap-4 my-[calc(1rem+1vw)] ">
+            <button
+              onClick={handleLogout}
+              className="flex items-center justify-center w-fit gap-[calc(.1rem+.1vw)]  bg-[#C72B2A] text-white font-bold text-[clamp(.9rem,1vw,2.4rem)] rounded-[20px] px-[calc(.8rem+1vw)] py-[calc(.2rem+.2vw)] "
+            >
+              <IoIosLogOut className="text-[clamp(1.3rem,1.5vw,3.3rem)]" />
+              Logout
+            </button>
+
+            <h3>Liked Videos</h3>
+          </div>
           <ul>
             {likes.map((video) => (
               <li key={video.id}>{video.snippet.title}</li>
