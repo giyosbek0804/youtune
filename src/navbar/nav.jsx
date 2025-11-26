@@ -366,7 +366,7 @@ function Navbar({ expanded, setExpanded }) {
     e.preventDefault();
     if (searchQuery.trim() !== "") {
       navigate(`/search?query=${searchQuery}`); // Navigate to search page with query
-      // setSearchQuery(inputValue);
+      setSearchQuery(inputValue);
     }
   };
   return (
