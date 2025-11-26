@@ -372,7 +372,7 @@ function Navbar({ expanded, setExpanded }) {
   return (
     <>
       {/* navbar section */}
-      <section className=" fixed top-0 py-[calc(.2rem+.2vw)] bg-blur  z-10 bg-background  w-full  text-white">
+      <section className=" fixed top-0 py-[calc(.2rem+.2vw)] bg-blur  z-20 bg-background  w-full  text-white">
         <div className="w-full   flex items-center justify-between pr-[calc(.5rem+1vw)]  lg:pr-[calc(.9rem+1vw)] pl-[calc(.6rem+1vw)]  py-[calc(.2rem+.5vw)]  ">
           {/* icons part */}
 
@@ -431,8 +431,8 @@ function Navbar({ expanded, setExpanded }) {
                 value={searchQuery}
                 type="search"
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className={`outline-none border-[#383838] border focus-within:border-blue-600  py-[calc(.1rem+.35vw)] rounded-l-3xl pl-[calc(.6rem+.8vw)] pr-2 md:block text-[clamp(1rem,1vw,3rem)]     md:w-full  ${
-                  navbarExpanded ? "w-full block  " : "w-0  hidden "
+                className={`outline-none border-hover border focus-within:border-blue-600  py-[calc(.1rem+.35vw)] rounded-l-3xl pl-[calc(.6rem+.8vw)] pr-2 md:block text-[clamp(1rem,1vw,3rem)]     md:w-full  ${
+                  navbarExpanded ? "w-full block " : "w-0  hidden "
                 } `}
                 placeholder="Search"
               />
@@ -519,10 +519,10 @@ function Navbar({ expanded, setExpanded }) {
 
       {/* aside section */}
       <section
-        className={` fixed       lg:left-0 bottom-0 overflow-auto md:pt-[calc(1rem+1.9vw)] top-auto  md:bottom-auto md:top-0 h-fit md:h-screen  transition-all duration-300 
+        className={` fixed   lg:left-0 bottom-0 overflow-auto md:pt-[calc(1rem+1.9vw)] top-auto  md:bottom-auto md:top-0 h-fit md:h-screen  transition-all duration-300 
   ${
     expandAside
-      ? "md:w-[calc(8.7rem+8vw)] w-full   "
+      ? "md:w-[calc(8.7rem+8vw)] w-full  z-10 "
       : "md:w-[calc(2.5rem+3vw)] w-[100%] "
   } bg-background bg-blur`}
       >

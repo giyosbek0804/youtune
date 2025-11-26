@@ -19,7 +19,7 @@ export default function Search() {
           {
             params: {
               part: "snippet",
-              maxResults: 50,
+              maxResults: 15,
               q: searchQuery,
               type: "video",
               key: API_KEY,
@@ -56,13 +56,7 @@ export default function Search() {
               />
 
               <div className="flex items-start pt-[calc(.6rem+.5vw)] gap-3  px-[calc(.6rem+.6vw)] sm:px-0 ">
-                {video.channelThumbnail && (
-                  <img
-                    src={video.channelThumbnail}
-                    alt={video.snippet.channelTitle}
-                    className="w-[calc(1.8rem+2vw)] h-[calc(1.8rem+2vw)] rounded-full"
-                  />
-                )}
+
                 {/* title */}
                 <div className="flex items-start justify-between  w-full">
                   <div>

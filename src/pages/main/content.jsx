@@ -132,7 +132,7 @@ function Content() {
             nextPageToken &&
             !loadingRef.current
           ) {
-            // Immediately disconnect to prevent duplicate calls
+            //  disconnect to prevent duplicate calls
             observerRef.current.disconnect();
             fetchVideos(nextPageToken);
           }
