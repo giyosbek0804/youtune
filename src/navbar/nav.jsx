@@ -44,7 +44,7 @@ import "./nav.css";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useYouTube } from "../youtuneContext";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 
 function Navbar({ expanded, setExpanded }) {
   const [navbarExpanded, setNavbarExpanded] = useState(false);
@@ -56,13 +56,6 @@ function Navbar({ expanded, setExpanded }) {
   const { subscriptions } = useYouTube();
   const [filterSelector, setFilterSelector] = useState("all");
   const showFilters = location.pathname === "/";
-  function submit(e) {
-    e.preventDefault();
-    if (inputValue.trim() === "") {
-      return;
-    }
-    console.log(inputValue);
-  }
 
   // aside data
   const asideData = [
@@ -366,6 +359,16 @@ function Navbar({ expanded, setExpanded }) {
     }
   }, [location.pathname]);
 
+  const { searchQuery, setSearchQuery } = useYouTube();
+  const navigate = useNavigate();
+  // locate to search jsx
+  const handleSearchNavigate = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim() !== "") {
+      navigate(`/search?query=${searchQuery}`); // Navigate to search page with query
+      setSearchQuery(inputValue);
+    }
+  };
   return (
     <>
       {/* navbar section */}
@@ -417,7 +420,7 @@ function Navbar({ expanded, setExpanded }) {
               }`}
             />
             <form
-              onSubmit={submit}
+              onSubmit={handleSearchNavigate}
               className={`flex items-center    border-none     w-full max-w-[calc(20rem+25vw)]   ${
                 navbarExpanded
                   ? "border-2 bg-[#383838]"
@@ -425,9 +428,9 @@ function Navbar({ expanded, setExpanded }) {
               } rounded-3xl  `}
             >
               <input
-                value={inputValue}
+                value={searchQuery}
                 type="search"
-                onChange={(e) => setInputValue(e.target.value)}
+                onChange={(e) => setSearchQuery(e.target.value)}
                 className={`outline-none border-[#383838] border focus-within:border-blue-600  py-[calc(.1rem+.35vw)] rounded-l-3xl pl-[calc(.6rem+.8vw)] pr-2 md:block text-[clamp(1rem,1vw,3rem)]     md:w-full  ${
                   navbarExpanded ? "w-full block  " : "w-0  hidden "
                 } `}
