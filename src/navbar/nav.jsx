@@ -520,7 +520,7 @@ function Navbar({ expanded, setExpanded }) {
 
       {/* aside section */}
       <section
-        className={` fixed   lg:left-0 bottom-0 overflow-auto md:pt-[calc(1rem+1.9vw)] top-auto bg-background border  md:bottom-auto md:top-0 h-fit md:h-screen  transition-all duration-300 
+        className={` fixed   lg:left-0 bottom-0 overflow-auto md:pt-[calc(1rem+1.9vw)] top-auto bg-background   md:bottom-auto md:top-0 h-fit md:h-screen  transition-all duration-300 
   ${
     expandAside
       ? "md:w-[calc(8.7rem+8vw)] w-full  z-10 "

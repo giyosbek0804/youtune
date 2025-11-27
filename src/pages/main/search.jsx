@@ -62,31 +62,6 @@ export default function Search() {
                     <h3 className="line-clamp-2 text-[clamp(.87rem,1vw,3rem)] leading-tight">
                       {video.snippet.title}
                     </h3>
-                    {/* <div className="flex items-center line-clamp-2 text-secondary2 gap-[calc(.1rem+.1vw)] text-[clamp(.74rem,.9vw,2rem)]">
-                      <p>
-                        {video.snippet.channelTitle} &middot;{" "}
-                        {video.statistics.viewCount >= 1_000_000_000
-                          ? `${(
-                              video.statistics.viewCount / 1_000_000_000
-                            ).toFixed(0)}B views`
-                          : video.statistics.viewCount >= 1_000_000
-                          ? `${(video.statistics.viewCount / 1_000_000).toFixed(
-                              0
-                            )}M views`
-                          : video.statistics.viewCount >= 1_000
-                          ? `${(video.statistics.viewCount / 1_000).toFixed(
-                              0
-                            )}K views`
-                          : `${video.statistics.viewCount} views`}{" "}
-                        &middot;{" "}
-                        {formatDistanceToNow(
-                          new Date(video.snippet.publishedAt),
-                          {
-                            addSuffix: true,
-                          }
-                        )}
-                      </p>
-                    </div> */}
                   </div>
                   <div>
                     <HiOutlineDotsVertical />

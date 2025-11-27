@@ -148,7 +148,9 @@ function Content() {
   return (
     <section
       className={`grid grid-cols-1  sm:grid-cols-2 lg:grid-cols-3 bg-background pt-[calc(1rem+1vw)] ${
-        videos.length > 0 ? "" : "flex md:grid-cols-1  w-full  "
+        videos.length > 0
+          ? ""
+          : "flex md:grid-cols-1 lg:grid-cols-1 xl:grid-cols-1 2xl:grid-cols-1 w-full  "
       }    sm:gap-4 `}
     >
       {videos.length > 0 ? (
@@ -232,7 +234,6 @@ function Content() {
         <div className="pt-[calc(2rem+3vw)] px-[calc(.5rem+.5vw)]  w-full text-center text-primary1">
           <p className=" text-[clamp(1.1rem,1.3vw,3rem)]    ">
             Sorry app reached daily qoute 😔{" "}
-    
           </p>
           <p className="text-[clamp(1rem,1.2vw,2.8rem)]">
             To know more about <i>quote</i> usage{" "}
