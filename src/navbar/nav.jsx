@@ -430,9 +430,9 @@ const handleSearchNavigate = (e) => {
               } rounded-3xl  `}
             >
               <input
-                value={inputValue}
+                value={searchQuery}
                 type="search"
-                onChange={(e) => setInputValue(e.target.value)}
+                onChange={(e) => setSearchQuery(e.target.value)}
                 className={`outline-none border-hover border bg-background focus-within:border-blue-600  py-[calc(.1rem+.35vw)] rounded-l-3xl pl-[calc(.6rem+.8vw)] pr-2 md:block text-[clamp(1rem,1vw,3rem)]     md:w-full  ${
                   navbarExpanded ? "w-full block " : "w-0  hidden "
                 } `}

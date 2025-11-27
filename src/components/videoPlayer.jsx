@@ -199,7 +199,7 @@
 // export default VideoPlayer;
 
 import React, { useCallback, useEffect, useState } from "react";
-import { useLocation, Link } from "react-router-dom";
+import { useLocation, Link, useParams } from "react-router-dom";
 import axios from "axios";
 import { formatDistanceToNow } from "date-fns";
 
@@ -207,11 +207,11 @@ const API_KEY = import.meta.env.VITE_YOUTUBE_API_KEY;
 
 const VideoPlayer = () => {
   const location = useLocation();
-  const { video, videos } = location.state;
-  const [fullVideo, setFullVideo] = useState(video);
+  const { video, videos } = location.state || {};
+  const [fullVideo, setFullVideo] = useState(video || null);
   const [relatedVideos, setRelatedVideos] = useState([]);
-
-  const videoId = video.id?.videoId || video.id;
+  const { id } = useParams();
+  const videoId = video?.id?.videoId || video?.id || id;
   const fetchVideos = useCallback(
     async (pageToken = "") => {
       try {
@@ -316,6 +316,29 @@ const VideoPlayer = () => {
     setRelatedVideos([]); // reset when opening new video
     fetchVideos(); // load category videos
   }, [videoId]);
+  useEffect(() => {
+    if (!video && id) {
+      async function fetchDirectVideo() {
+        try {
+          const res = await axios.get(
+            "https://www.googleapis.com/youtube/v3/videos",
+            {
+              params: {
+                part: "snippet,statistics,contentDetails",
+                id,
+                key: API_KEY,
+              },
+            }
+          );
+          setFullVideo(res.data.items[0]);
+        } catch (err) {
+          console.error("Failed to fetch direct video", err);
+        }
+      }
+
+      fetchDirectVideo();
+    }
+  }, [id, video]);
 
   console.log(relatedVideos);
 
