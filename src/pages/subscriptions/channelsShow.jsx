@@ -4,7 +4,7 @@ function ChannelsShow() {
   const { channelId } = useParams();
   return (
     <>
-      <h1> {channelId} channel under development </h1>
+      <h1 className="text-primary1"> {channelId} channel under development </h1>
     </>
   );
 }

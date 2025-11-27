@@ -1,7 +1,7 @@
 function Shorts() {
   return (
     <>
-      <h2>shorts</h2>
+      <h2 className="text-primary1">shorts</h2>
     </>
   );
 }

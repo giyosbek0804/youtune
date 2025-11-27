@@ -5,8 +5,10 @@ function LikedVideos() {
 
     return (
       <div style={{ padding: "20px" }}>
-        <h2>Liked Videos</h2>
-        {likes.length === 0 && <p>No liked videos found.</p>}
+        <h2 className="text-primary1">Liked Videos</h2>
+        {likes.length === 0 && (
+          <p className="text-primary1">No liked videos found.</p>
+        )}
         <ul>
           {likes.map((video) => (
             <li key={video.id}>{video.snippet.title}</li>

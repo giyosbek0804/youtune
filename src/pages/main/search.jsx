@@ -7,8 +7,8 @@ const API_KEY = import.meta.env.VITE_YOUTUBE_API_KEY;
 
 export default function Search() {
   const { searchQuery, setSearchQuery } = useYouTube();
-    const [videos, setVideos] = useState([]);
-    
+  const [videos, setVideos] = useState([]);
+
   useEffect(() => {
     if (!searchQuery) return;
 
@@ -19,7 +19,7 @@ export default function Search() {
           {
             params: {
               part: "snippet",
-              maxResults: 15,
+              maxResults: 50,
               q: searchQuery,
               type: "video",
               key: API_KEY,
@@ -52,11 +52,10 @@ export default function Search() {
               <img
                 src={video.snippet.thumbnails.medium.url}
                 alt={video.snippet.title}
-                className="w-full  md:rounded-2xl border "
+                className="w-full  md:rounded-2xl  "
               />
 
               <div className="flex items-start pt-[calc(.6rem+.5vw)] gap-3  px-[calc(.6rem+.6vw)] sm:px-0 ">
-
                 {/* title */}
                 <div className="flex items-start justify-between  w-full">
                   <div>

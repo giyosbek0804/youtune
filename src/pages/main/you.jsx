@@ -63,9 +63,16 @@ function You() {
   };
 
   return (
-    <div className=" w-full px-[calc(.95rem+1vw)] ">
+    <div className=" w-full px-[calc(.95rem+1vw)]   ">
       {!user ? (
-        <button onClick={() => login()}>Login with Google</button>
+        <div className="w-full  flex justify-center items-center">
+          <button
+            onClick={() => login()}
+            className="text-primary1 border px-[calc(.3rem+.3vw)] py-[calc(.1rem+.2vw)] "
+          >
+            Login with Google
+          </button>
+        </div>
       ) : (
         <>
           <div className="flex gap-2 items-center">
@@ -73,14 +80,14 @@ function You() {
               <img
                 src={user.picture}
                 alt="Profile img"
-                className="rounded-full w-[calc(4rem+3vw)] h-[calc(4rem+3vw)]  "
+                className="rounded-full w-[calc(4rem+3vw)] h-[calc(4rem+3vw)] text-primary1  "
               />
             </div>
             <div className="">
-              <h2 className="text-[clamp(1.5rem,2.3vw,4rem)] leading-tight font-bold w-fit  text-white">
+              <h2 className="text-[clamp(1.5rem,2.3vw,4rem)] leading-tight font-bold w-fit  text-primary1">
                 {user.name}
               </h2>
-              <p className="text-[clamp(.75rem,1vw,2.6rem)] text-secondary2">
+              <p className="text-[clamp(.75rem,1vw,2.6rem)] text-primary1">
                 @{user.email}
               </p>
             </div>
@@ -88,21 +95,12 @@ function You() {
           <div className="flex flex-col gap-4 my-[calc(1rem+1vw)] ">
             <button
               onClick={handleLogout}
-              className="flex items-center justify-center w-fit gap-[calc(.1rem+.1vw)]  bg-[#C72B2A] text-white font-bold text-[clamp(.9rem,1vw,2.4rem)] rounded-[20px] px-[calc(.8rem+1vw)] py-[calc(.2rem+.2vw)] "
+              className="flex items-center justify-center w-fit gap-[calc(.1rem+.1vw)]  bg-[#C72B2A] text-primary1 font-bold text-[clamp(.9rem,1vw,2.4rem)] rounded-[20px] px-[calc(.8rem+1vw)] py-[calc(.2rem+.2vw)] "
             >
               <IoIosLogOut className="text-[clamp(1.3rem,1.5vw,3.3rem)]" />
               Logout
             </button>
-
-            <h3>Liked Videos</h3>
           </div>
-          <ul>
-            {likes.map((video) => (
-              <li key={video.id}>{video.snippet.title}</li>
-            ))}
-          </ul>
-          <Link to="/subscriptionslist">Subscriptions Only</Link> |{" "}
-          <Link to="/you/likedvideos">Likes Only</Link>
         </>
       )}
     </div>

@@ -147,10 +147,8 @@ function Content() {
 
   return (
     <section
-      className={`grid grid-cols-1  sm:grid-cols-2 lg:grid-cols-3 ${
-        videos.length > 0
-          ? ""
-          : "flex bg-red-200 w-full"
+      className={`grid grid-cols-1  sm:grid-cols-2 lg:grid-cols-3 bg-background pt-[calc(1rem+1vw)] ${
+        videos.length > 0 ? "" : "flex md:grid-cols-1  w-full  "
       }    sm:gap-4 `}
     >
       {videos.length > 0 ? (
@@ -187,12 +185,17 @@ function Content() {
                   {/* title */}
                   <div className="flex items-start justify-between  w-full">
                     <div>
-                      <h3 className="line-clamp-2 text-[clamp(.87rem,1vw,3rem)] leading-tight">
+                      <h3 className="line-clamp-2 text-[clamp(.87rem,1vw,3rem)] leading-tight text-primary1">
                         {video.snippet.title}
                       </h3>
+                      <p className="line-clamp-2 text-secondary2 text-[clamp(.74rem,.9vw,2rem)] max-md:hidden">
+                        {video?.snippet?.channelTitle}
+                      </p>
                       <div className="flex items-center line-clamp-2 text-secondary2 gap-[calc(.1rem+.1vw)] text-[clamp(.74rem,.9vw,2rem)]">
                         <p>
-                          {video.snippet.channelTitle} &middot;{" "}
+                          <span className="md:hidden">
+                            {video?.snippet?.channelTitle} &middot;
+                          </span>{" "}
                           {video.statistics.viewCount >= 1_000_000_000
                             ? `${(
                                 video.statistics.viewCount / 1_000_000_000
@@ -216,7 +219,7 @@ function Content() {
                         </p>
                       </div>
                     </div>
-                    <div>
+                    <div className="text-primary1">
                       <HiOutlineDotsVertical />
                     </div>
                   </div>
@@ -226,12 +229,23 @@ function Content() {
           );
         })
       ) : (
-        <p className="pt-[calc(3rem+3vw)] border  text-center ">
-          Sorry app reached daily qoute 😔 (quote resets next day at 1PM)
-        </p>
+        <div className="pt-[calc(2rem+3vw)] px-[calc(.5rem+.5vw)]  w-full text-center text-primary1">
+          <p className=" text-[clamp(1.1rem,1.3vw,3rem)]    ">
+            Sorry app reached daily qoute 😔{" "}
+    
+          </p>
+          <p className="text-[clamp(1rem,1.2vw,2.8rem)]">
+            To know more about <i>quote</i> usage{" "}
+            <Link to={"/quoteusage"} className="underline text-blue-500">
+              click here
+            </Link>
+          </p>
+        </div>
       )}
 
-      {loading && <p className="w-full text-center py-6">Loading...</p>}
+      {loading && (
+        <p className="w-full text-center py-6 text-primary1">Loading...</p>
+      )}
     </section>
   );
 }

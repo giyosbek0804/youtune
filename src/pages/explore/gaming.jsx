@@ -1,7 +1,7 @@
 function Gaming() {
   return (
     <>
-      <h1>gaming</h1>
+      <h1 className="text-primary1">gaming</h1>
     </>
   );
 }

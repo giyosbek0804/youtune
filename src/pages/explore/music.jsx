@@ -1,7 +1,7 @@
 function Music() {
   return (
     <>
-      <h1>Music</h1>
+      <h1 className="text-primary1">Music</h1>
     </>
   );
 }

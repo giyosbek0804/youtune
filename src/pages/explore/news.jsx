@@ -1,7 +1,7 @@
 function News() {
   return (
     <>
-      <h1>News</h1>
+      <h1 className="text-primary1">News</h1>
     </>
   );
 }

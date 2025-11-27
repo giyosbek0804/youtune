@@ -8,7 +8,6 @@ function SubscriptionList() {
 
   return (
     <div className="w-full">
-
       {subscriptions.length === 0 && <p>No subscriptions found.</p>}
       <ul className="  pb-[calc(4rem+4vw)] ">
         {subscriptions.map((sub) => (
@@ -20,13 +19,16 @@ function SubscriptionList() {
             <img
               src={sub.snippet.thumbnails.medium.url}
               alt={sub.snippet.title}
-              className="w-[calc(2.5rem+2.2vw)] h-[calc(2.5rem+2.2vw)] md:w-[calc(4rem+4vw)] md:h-[calc(4rem+4vw)]  rounded-full mr-[calc(.5rem+.7vw)]"
+              className="w-[calc(2.5rem+2.2vw)] h-[calc(2.5rem+2.2vw)] md:w-[calc(4rem+4vw)] md:h-[calc(4rem+4vw)]  rounded-full mr-[calc(.5rem+.7vw)] text-primary1"
             />
-            <abbr title={sub.snippet.title} className="no-underline">
+            <abbr
+              title={sub.snippet.title}
+              className="no-underline text-primary1"
+            >
               <li className="line-clamp-1 text-[clamp(1.02rem,1.15vw,2.6rem)] flex items-center ">
                 {sub.snippet.title}
                 <abbr title="Verified">
-                  <span className="text-[clamp(.5rem,.8vw,1.2rem)] cursor-pointer ml-[calc(.2rem+.1vw)] text-secondary2 hidden md:block">
+                  <span className="text-[clamp(.5rem,.8vw,1.2rem)] cursor-pointer ml-[calc(.2rem+.1vw)] text-primary1 hidden md:block">
                     <FaCircleCheck />
                   </span>
                 </abbr>

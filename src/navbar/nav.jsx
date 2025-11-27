@@ -362,15 +362,15 @@ function Navbar({ expanded, setExpanded }) {
   const { searchQuery, setSearchQuery } = useYouTube();
   const navigate = useNavigate();
   // locate to search jsx
-const handleSearchNavigate = (e) => {
-  e.preventDefault();
-  if (inputValue.trim() === "") return;
+  const handleSearchNavigate = (e) => {
+    e.preventDefault();
+    if (inputValue.trim() === "") return;
 
-  // update context ONLY on button press
-  setSearchQuery(inputValue);
+    // update context ONLY on button press
+    setSearchQuery(inputValue);
 
-  navigate(`/search?query=${inputValue}`);
-};
+    navigate(`/search?query=${inputValue}`);
+  };
   return (
     <>
       {/* navbar section */}
@@ -430,9 +430,9 @@ const handleSearchNavigate = (e) => {
               } rounded-3xl  `}
             >
               <input
-                value={searchQuery}
+                value={inputValue}
                 type="search"
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={(e) => setInputValue(e.target.value)}
                 className={`outline-none border-hover border bg-background focus-within:border-blue-600  py-[calc(.1rem+.35vw)] rounded-l-3xl pl-[calc(.6rem+.8vw)] pr-2 md:block text-[clamp(1rem,1vw,3rem)]     md:w-full  ${
                   navbarExpanded ? "w-full block " : "w-0  hidden "
                 } `}
@@ -487,10 +487,10 @@ const handleSearchNavigate = (e) => {
         <div
           className={` pl-[calc(.25rem+.32vw)]  ${
             showFilters ? "flex" : "hidden"
-          }   fixed bg-background backdrop-blur-2xl w-full flex    ${
+          }   fixed bg-background backdrop-blur-2xl w-full flex   ${
             expandAside
               ? "md:ml-[calc(8.2rem+8vw)] "
-              : "md:ml-[calc(2.5rem+3vw)]  "
+              : "lg:ml-[calc(2.5rem+3vw)]  "
           }`}
         >
           <div
@@ -503,10 +503,9 @@ const handleSearchNavigate = (e) => {
                   onClick={() => {
                     setFilter(filter.filter.toLowerCase());
                     console.log(filter.filter);
-
                     setFilterSelector(filter.id);
                   }}
-                  className={`mx-2 my-[calc(.3rem+.3vw)] capitalize cursor-pointer py-1 whitespace-nowrap duration-200 eas px-2 rounded-[8px] bg-hover ${
+                  className={`mx-2 last:mr-[calc(3rem+3vw)] my-[calc(.3rem+.3vw)] capitalize cursor-pointer py-1 whitespace-nowrap duration-200 eas px-2 rounded-[8px] bg-hover ${
                     filterSelector === filter.id ? "bg-primary1 text-hover" : ""
                   } `}
                 >
@@ -521,19 +520,19 @@ const handleSearchNavigate = (e) => {
 
       {/* aside section */}
       <section
-        className={` fixed   lg:left-0 bottom-0 overflow-auto md:pt-[calc(1rem+1.9vw)] top-auto  md:bottom-auto md:top-0 h-fit md:h-screen  transition-all duration-300 
+        className={` fixed   lg:left-0 bottom-0 overflow-auto md:pt-[calc(1rem+1.9vw)] top-auto bg-background border  md:bottom-auto md:top-0 h-fit md:h-screen  transition-all duration-300 
   ${
     expandAside
       ? "md:w-[calc(8.7rem+8vw)] w-full  z-10 "
-      : "md:w-[calc(2.5rem+3vw)] w-[100%] "
+      : "md:w-[calc(2.5rem+3vw)] w-[100%] md:left-[-100%] lg:left-0 "
   } bg-background bg-blur`}
       >
-        <div className="flex  flex-row md:flex-col  items-center justify-between  px-2  md:p-4">
+        <div className="flex  flex-row md:flex-col   items-center justify-between  px-2  md:p-4">
           {asideData.map((section) => {
             return (
               <div
                 key={section.id}
-                className={`  w-full md:w-fit  ${
+                className={`  w-full md:w-fit   ${
                   section.alwaysVisible ? "block  " : "hidden"
                 }`}
               >
@@ -584,7 +583,7 @@ const handleSearchNavigate = (e) => {
                         </motion.div>
 
                         <p
-                          className={`   ${
+                          className={`text-primary1   ${
                             link.title
                               ? "w-full text-[clamp(1rem,1vw,3.8rem)] "
                               : ""

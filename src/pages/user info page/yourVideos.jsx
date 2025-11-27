@@ -1,7 +1,7 @@
 function YourVideos() {
   return (
     <>
-      <h1>Your Videos</h1>
+      <h1 className="text-primary1">Your Videos</h1>
     </>
   );
 }
