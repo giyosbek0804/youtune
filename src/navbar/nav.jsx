@@ -362,13 +362,15 @@ function Navbar({ expanded, setExpanded }) {
   const { searchQuery, setSearchQuery } = useYouTube();
   const navigate = useNavigate();
   // locate to search jsx
-  const handleSearchNavigate = (e) => {
-    e.preventDefault();
-    if (searchQuery.trim() !== "") {
-      navigate(`/search?query=${searchQuery}`); // Navigate to search page with query
-      setSearchQuery(inputValue);
-    }
-  };
+const handleSearchNavigate = (e) => {
+  e.preventDefault();
+  if (inputValue.trim() === "") return;
+
+  // update context ONLY on button press
+  setSearchQuery(inputValue);
+
+  navigate(`/search?query=${inputValue}`);
+};
   return (
     <>
       {/* navbar section */}
@@ -409,7 +411,7 @@ function Navbar({ expanded, setExpanded }) {
           <div
             className={`flex items-center     justify-between duration-250 gap-[calc(.5rem+.5vw)] md:w-[calc(25rem+28vw)]  md:max-w-[45.5vw] ${
               navbarExpanded
-                ? "w-full  absolute md:relative ml-0 left-0 top-0 h-full  md:left-auto bg-[#292929]  px-[calc(.7rem+.6vw)]"
+                ? "w-full  absolute md:relative ml-0 left-0 top-0 h-full  md:left-auto bg-[#292929] md:bg-transparent  px-[calc(.7rem+.6vw)]"
                 : "w-fit md:px-[calc(.7rem+.6vw)] ml-[calc(2rem+3vw)]"
             }  `}
           >
@@ -428,10 +430,10 @@ function Navbar({ expanded, setExpanded }) {
               } rounded-3xl  `}
             >
               <input
-                value={searchQuery}
+                value={inputValue}
                 type="search"
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className={`outline-none border-hover border focus-within:border-blue-600  py-[calc(.1rem+.35vw)] rounded-l-3xl pl-[calc(.6rem+.8vw)] pr-2 md:block text-[clamp(1rem,1vw,3rem)]     md:w-full  ${
+                onChange={(e) => setInputValue(e.target.value)}
+                className={`outline-none border-hover border bg-background focus-within:border-blue-600  py-[calc(.1rem+.35vw)] rounded-l-3xl pl-[calc(.6rem+.8vw)] pr-2 md:block text-[clamp(1rem,1vw,3rem)]     md:w-full  ${
                   navbarExpanded ? "w-full block " : "w-0  hidden "
                 } `}
                 placeholder="Search"

@@ -146,78 +146,90 @@ function Content() {
   );
 
   return (
-    <section className="grid grid-cols-1  sm:grid-cols-2 lg:grid-cols-3    sm:gap-4 ">
-      {videos.map((video, i) => {
-        const isLastVideo = i === videos.length - 5;
+    <section
+      className={`grid grid-cols-1  sm:grid-cols-2 lg:grid-cols-3 ${
+        videos.length > 0
+          ? ""
+          : "flex bg-red-200 w-full"
+      }    sm:gap-4 `}
+    >
+      {videos.length > 0 ? (
+        videos.map((video, i) => {
+          const isLastVideo = i === videos.length - 5;
 
-        return (
-          <div
-            key={video.id || i}
-            ref={isLastVideo ? lastVideoRef : null}
-            className="my-[calc(.5rem+1vw)]  "
-          >
-            {/* videos */}
-            <Link
-              to={`/video/${video.id}`}
-              state={{ video, videos }}
-              className="block   overflow-hidden "
+          return (
+            <div
+              key={video.id || i}
+              ref={isLastVideo ? lastVideoRef : null}
+              className="my-[calc(.5rem+1vw)]  "
             >
-              {/* thumbnail */}
-              <img
-                src={video.snippet.thumbnails.medium.url}
-                alt={video.snippet.title}
-                className="w-full  md:rounded-2xl"
-              />
+              {/* videos */}
+              <Link
+                to={`/video/${video.id}`}
+                state={{ video, videos }}
+                className="block   overflow-hidden "
+              >
+                {/* thumbnail */}
+                <img
+                  src={video.snippet.thumbnails.medium.url}
+                  alt={video.snippet.title}
+                  className="w-full  md:rounded-2xl"
+                />
 
-              <div className="flex items-start pt-[calc(.6rem+.5vw)] gap-3  px-[calc(.6rem+.6vw)] sm:px-0 ">
-                {video.channelThumbnail && (
-                  <img
-                    src={video.channelThumbnail}
-                    alt={video.snippet.channelTitle}
-                    className="w-[calc(1.8rem+2vw)] h-[calc(1.8rem+2vw)] rounded-full"
-                  />
-                )}
-                {/* title */}
-                <div className="flex items-start justify-between  w-full">
-                  <div>
-                    <h3 className="line-clamp-2 text-[clamp(.87rem,1vw,3rem)] leading-tight">
-                      {video.snippet.title}
-                    </h3>
-                    <div className="flex items-center line-clamp-2 text-secondary2 gap-[calc(.1rem+.1vw)] text-[clamp(.74rem,.9vw,2rem)]">
-                      <p>
-                        {video.snippet.channelTitle} &middot;{" "}
-                        {video.statistics.viewCount >= 1_000_000_000
-                          ? `${(
-                              video.statistics.viewCount / 1_000_000_000
-                            ).toFixed(0)}B views`
-                          : video.statistics.viewCount >= 1_000_000
-                          ? `${(video.statistics.viewCount / 1_000_000).toFixed(
-                              0
-                            )}M views`
-                          : video.statistics.viewCount >= 1_000
-                          ? `${(video.statistics.viewCount / 1_000).toFixed(
-                              0
-                            )}K views`
-                          : `${video.statistics.viewCount} views`}{" "}
-                        &middot;{" "}
-                        {formatDistanceToNow(
-                          new Date(video.snippet.publishedAt),
-                          {
-                            addSuffix: true,
-                          }
-                        )}
-                      </p>
+                <div className="flex items-start pt-[calc(.6rem+.5vw)] gap-3  px-[calc(.6rem+.6vw)] sm:px-0 ">
+                  {video.channelThumbnail && (
+                    <img
+                      src={video.channelThumbnail}
+                      alt={video.snippet.channelTitle}
+                      className="w-[calc(1.8rem+2vw)] h-[calc(1.8rem+2vw)] rounded-full"
+                    />
+                  )}
+                  {/* title */}
+                  <div className="flex items-start justify-between  w-full">
+                    <div>
+                      <h3 className="line-clamp-2 text-[clamp(.87rem,1vw,3rem)] leading-tight">
+                        {video.snippet.title}
+                      </h3>
+                      <div className="flex items-center line-clamp-2 text-secondary2 gap-[calc(.1rem+.1vw)] text-[clamp(.74rem,.9vw,2rem)]">
+                        <p>
+                          {video.snippet.channelTitle} &middot;{" "}
+                          {video.statistics.viewCount >= 1_000_000_000
+                            ? `${(
+                                video.statistics.viewCount / 1_000_000_000
+                              ).toFixed(0)}B views`
+                            : video.statistics.viewCount >= 1_000_000
+                            ? `${(
+                                video.statistics.viewCount / 1_000_000
+                              ).toFixed(0)}M views`
+                            : video.statistics.viewCount >= 1_000
+                            ? `${(video.statistics.viewCount / 1_000).toFixed(
+                                0
+                              )}K views`
+                            : `${video.statistics.viewCount} views`}{" "}
+                          &middot;{" "}
+                          {formatDistanceToNow(
+                            new Date(video.snippet.publishedAt),
+                            {
+                              addSuffix: true,
+                            }
+                          )}
+                        </p>
+                      </div>
+                    </div>
+                    <div>
+                      <HiOutlineDotsVertical />
                     </div>
                   </div>
-                  <div>
-                    <HiOutlineDotsVertical />
-                  </div>
                 </div>
-              </div>
-            </Link>
-          </div>
-        );
-      })}
+              </Link>
+            </div>
+          );
+        })
+      ) : (
+        <p className="pt-[calc(3rem+3vw)] border  text-center ">
+          Sorry app reached daily qoute 😔 (quote resets next day at 1PM)
+        </p>
+      )}
 
       {loading && <p className="w-full text-center py-6">Loading...</p>}
     </section>
