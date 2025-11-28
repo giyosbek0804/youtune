@@ -142,7 +142,7 @@ function Content() {
 
       if (node) observerRef.current.observe(node);
     },
-    [hasMore, nextPageToken, fetchVideos]
+    [hasMore, nextPageToken, fetchVideos, loadingRef]
   );
 
   return (
