@@ -117,33 +117,30 @@ function Content() {
   }, [filter]);
 
   // Observer logic
-  const lastVideoRef = useCallback(
-    (node) => {
-      if (loadingRef.current) return; // don't observe while loading
+const lastVideoRef = useCallback(
+  (node) => {
+    if (loadingRef.current) return;
 
-      if (observerRef.current) observerRef.current.disconnect();
+    if (observerRef.current) observerRef.current.disconnect();
 
-      observerRef.current = new IntersectionObserver(
-        (entries) => {
-          const entry = entries[0];
-          if (
-            entry.isIntersecting &&
-            hasMore &&
-            nextPageToken &&
-            !loadingRef.current
-          ) {
-            //  disconnect to prevent duplicate calls
-            observerRef.current.disconnect();
-            fetchVideos(nextPageToken);
-          }
-        },
-        { root: null, rootMargin: "400px", threshold: 0.1 }
-      );
+    observerRef.current = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMore && nextPageToken) {
+          fetchVideos(nextPageToken);
+        }
+      },
+      {
+        root: null,
+        rootMargin: "200px",
+        threshold: 0.1,
+      }
+    );
 
-      if (node) observerRef.current.observe(node);
-    },
-    [hasMore, nextPageToken, fetchVideos, loadingRef]
-  );
+    if (node) observerRef.current.observe(node);
+  },
+  [hasMore, nextPageToken]
+);
+
 
   return (
     <section
