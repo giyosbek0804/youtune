@@ -20,9 +20,6 @@ export const YouTubeProvider = ({ children }) => {
     const storedSubs = localStorage.getItem("subscriptions");
     if (storedSubs) setSubscriptions(JSON.parse(storedSubs));
 
-    const storedLikes = localStorage.getItem("likes");
-    if (storedLikes) setLikes(JSON.parse(storedLikes));
-
     // Fetch user info
     fetch("https://www.googleapis.com/oauth2/v3/userinfo", {
       headers: { Authorization: `Bearer ${storedToken}` },

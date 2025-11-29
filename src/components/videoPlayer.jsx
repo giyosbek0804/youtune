@@ -164,7 +164,7 @@ const VideoPlayer = () => {
             </div>
           </div>
           <div className=" ">
-            <img loading="lazy" src={video.channelThumbnail} alt="" />
+            <img loading="lazy" src={video.channelThumbnail} alt="thumbnail" />
           </div>
         </div>
       </div>
