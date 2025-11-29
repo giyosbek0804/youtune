@@ -120,39 +120,28 @@ function Content() {
   const lastVideoRef = useCallback(
     (node) => {
       if (loadingRef.current) return;
+setTimeout(() => {
+  
+  if (observerRef.current) observerRef.current.disconnect();
 
-      if (observerRef.current) observerRef.current.disconnect();
+  observerRef.current = new IntersectionObserver(
+    (entries) => {
+      if (entries[0].isIntersecting && hasMore && nextPageToken) {
+        fetchVideos(nextPageToken);
+      }
+    },
+    {
+      root: null,
+      rootMargin: "200px",
+      threshold: 0.1,
+    }
+  );
+  if (node) observerRef.current.observe(node);
+}, 100);
 
-      observerRef.current = new IntersectionObserver(
-        (entries) => {
-          if (entries[0].isIntersecting && hasMore && nextPageToken) {
-            fetchVideos(nextPageToken);
-          }
-        },
-        {
-          root: null,
-          rootMargin: "200px",
-          threshold: 0.1,
-        }
-      );
-
-      if (node) observerRef.current.observe(node);
     },
     [hasMore, nextPageToken]
   );
-  useEffect(() => {
-    if (observerRef.current) observerRef.current.disconnect();
-
-    // Attach observer to the new last video after render
-    const lastVideoElement = document.querySelector(
-      `[data-video-index='${videos.length - 1}']`
-    );
-    if (lastVideoElement) {
-      lastVideoRef(lastVideoElement);
-    }
-    console.log("Videos length updated:", videos.length);
-  }, [videos]);
-
 
   return (
     <>
