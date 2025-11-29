@@ -12,7 +12,7 @@ function Content() {
   const [nextPageToken, setNextPageToken] = useState("");
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
-
+  const [videosLength, setVideosLength] = useState(0);
   const observerRef = useRef(null);
   const loadingRef = useRef(false); // keeps the live loading value
 
@@ -55,7 +55,7 @@ function Content() {
               part: "snippet,contentDetails,statistics",
               chart: "mostPopular",
               regionCode: "US",
-              maxResults: 24,
+              maxResults: 50,
               order: "viewCount",
               key: API_KEY,
               pageToken: pageToken || undefined,
@@ -117,134 +117,149 @@ function Content() {
   }, [filter]);
 
   // Observer logic
-const lastVideoRef = useCallback(
-  (node) => {
-    if (loadingRef.current) return;
+  const lastVideoRef = useCallback(
+    (node) => {
+      if (loadingRef.current) return;
 
+      if (observerRef.current) observerRef.current.disconnect();
+
+      observerRef.current = new IntersectionObserver(
+        (entries) => {
+          if (entries[0].isIntersecting && hasMore && nextPageToken) {
+            fetchVideos(nextPageToken);
+          }
+        },
+        {
+          root: null,
+          rootMargin: "200px",
+          threshold: 0.1,
+        }
+      );
+
+      if (node) observerRef.current.observe(node);
+    },
+    [hasMore, nextPageToken]
+  );
+  useEffect(() => {
     if (observerRef.current) observerRef.current.disconnect();
 
-    observerRef.current = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && hasMore && nextPageToken) {
-          fetchVideos(nextPageToken);
-        }
-      },
-      {
-        root: null,
-        rootMargin: "200px",
-        threshold: 0.1,
-      }
+    // Attach observer to the new last video after render
+    const lastVideoElement = document.querySelector(
+      `[data-video-index='${videos.length - 1}']`
     );
-
-    if (node) observerRef.current.observe(node);
-  },
-  [hasMore, nextPageToken]
-);
+    if (lastVideoElement) {
+      lastVideoRef(lastVideoElement);
+    }
+    console.log("Videos length updated:", videos.length);
+  }, [videos]);
 
 
   return (
-    <section
-      className={`grid grid-cols-1  sm:grid-cols-2 lg:grid-cols-3 bg-background pt-[calc(1rem+1vw)] ${
-        videos.length > 0
-          ? ""
-          : "flex md:grid-cols-1 lg:grid-cols-1 xl:grid-cols-1 2xl:grid-cols-1 w-full  "
-      }    sm:gap-4 `}
-    >
-      {videos.length > 0 ? (
-        videos.map((video, i) => {
-          const isLastVideo = i === videos.length - 5;
+    <>
+      <section
+        className={`grid grid-cols-1  sm:grid-cols-2 lg:grid-cols-3 bg-background  justify-center pt-[calc(1rem+1vw)] ${
+          videos.length > 0
+            ? ""
+            : "flex md:grid-cols-1 lg:grid-cols-1 xl:grid-cols-1 2xl:grid-cols-1 w-full  "
+        }    sm:gap-4 `}
+      >
+        {videos.length > 0 ? (
+          videos.map((video, i) => {
+            const isLastVideo = i === videos.length - 1;
 
-          return (
-            <div
-              key={video.id || i}
-              ref={isLastVideo ? lastVideoRef : null}
-              className="my-[calc(.5rem+1vw)]  "
-            >
-              {/* videos */}
-              <Link
-                to={`/video/${video.id}`}
-                state={{ video, videos }}
-                className="block   overflow-hidden "
+            return (
+              <div
+                key={video.id || i}
+                ref={isLastVideo ? lastVideoRef : null}
+                className="my-[calc(.5rem+1vw)]  "
               >
-                {/* thumbnail */}
-                <img
-                  src={video.snippet.thumbnails.medium.url}
-                  alt={video.snippet.title}
-                  className="w-full  md:rounded-2xl"
-                />
+                {/* videos */}
+                <Link
+                  to={`/video/${video.id}`}
+                  state={{ video, videos }}
+                  className="block   overflow-hidden "
+                >
+                  {/* thumbnail */}
+                  <img
+                    src={video.snippet.thumbnails.medium.url}
+                    alt={video.snippet.title}
+                    className="w-full  md:rounded-2xl"
+                  />
 
-                <div className="flex items-start pt-[calc(.6rem+.5vw)] gap-3  px-[calc(.6rem+.6vw)] sm:px-0 ">
-                  {video.channelThumbnail && (
-                    <img
-                      src={video.channelThumbnail}
-                      alt={video.snippet.channelTitle}
-                      className="w-[calc(1.8rem+2vw)] h-[calc(1.8rem+2vw)] rounded-full"
-                    />
-                  )}
-                  {/* title */}
-                  <div className="flex items-start justify-between  w-full">
-                    <div>
-                      <h3 className="line-clamp-2 text-[clamp(.87rem,1vw,3rem)] leading-tight text-primary1">
-                        {video.snippet.title}
-                      </h3>
-                      <p className="line-clamp-2 text-secondary2 text-[clamp(.74rem,.9vw,2rem)] max-md:hidden">
-                        {video?.snippet?.channelTitle}
-                      </p>
-                      <div className="flex items-center line-clamp-2 text-secondary2 gap-[calc(.1rem+.1vw)] text-[clamp(.74rem,.9vw,2rem)]">
-                        <p>
-                          <span className="md:hidden">
-                            {video?.snippet?.channelTitle} &middot;
-                          </span>{" "}
-                          {video.statistics.viewCount >= 1_000_000_000
-                            ? `${(
-                                video.statistics.viewCount / 1_000_000_000
-                              ).toFixed(0)}B views`
-                            : video.statistics.viewCount >= 1_000_000
-                            ? `${(
-                                video.statistics.viewCount / 1_000_000
-                              ).toFixed(0)}M views`
-                            : video.statistics.viewCount >= 1_000
-                            ? `${(video.statistics.viewCount / 1_000).toFixed(
-                                0
-                              )}K views`
-                            : `${video.statistics.viewCount} views`}{" "}
-                          &middot;{" "}
-                          {formatDistanceToNow(
-                            new Date(video.snippet.publishedAt),
-                            {
-                              addSuffix: true,
-                            }
-                          )}
+                  <div className="flex items-start pt-[calc(.6rem+.5vw)] gap-3  px-[calc(.6rem+.6vw)] sm:px-0 ">
+                    {video.channelThumbnail && (
+                      <img
+                        src={video.channelThumbnail}
+                        alt={video.snippet.channelTitle}
+                        className="w-[calc(1.8rem+2vw)] h-[calc(1.8rem+2vw)] rounded-full"
+                      />
+                    )}
+                    {/* title */}
+                    <div className="flex items-start justify-between  w-full">
+                      <div>
+                        <h3 className="line-clamp-2 text-[clamp(.87rem,1vw,3rem)] leading-tight text-primary1">
+                          {video.snippet.title}
+                        </h3>
+                        <p className="line-clamp-2 text-secondary2 text-[clamp(.74rem,.9vw,2rem)] max-md:hidden">
+                          {video?.snippet?.channelTitle}
                         </p>
+                        <div className="flex items-center line-clamp-2 text-secondary2 gap-[calc(.1rem+.1vw)] text-[clamp(.74rem,.9vw,2rem)]">
+                          <p>
+                            <span className="md:hidden">
+                              {video?.snippet?.channelTitle} &middot;
+                            </span>{" "}
+                            {video.statistics.viewCount >= 1_000_000_000
+                              ? `${(
+                                  video.statistics.viewCount / 1_000_000_000
+                                ).toFixed(0)}B views`
+                              : video.statistics.viewCount >= 1_000_000
+                              ? `${(
+                                  video.statistics.viewCount / 1_000_000
+                                ).toFixed(0)}M views`
+                              : video.statistics.viewCount >= 1_000
+                              ? `${(video.statistics.viewCount / 1_000).toFixed(
+                                  0
+                                )}K views`
+                              : `${video.statistics.viewCount} views`}{" "}
+                            &middot;{" "}
+                            {formatDistanceToNow(
+                              new Date(video.snippet.publishedAt),
+                              {
+                                addSuffix: true,
+                              }
+                            )}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="text-primary1">
+                        <HiOutlineDotsVertical />
                       </div>
                     </div>
-                    <div className="text-primary1">
-                      <HiOutlineDotsVertical />
-                    </div>
                   </div>
-                </div>
+                </Link>
+              </div>
+            );
+          })
+        ) : (
+          <div className="pt-[calc(2rem+3vw)] px-[calc(.5rem+.5vw)]  w-full text-center text-primary1">
+            <p className=" text-[clamp(1.1rem,1.3vw,3rem)]    ">
+              Sorry app reached daily qoute 😔{" "}
+            </p>
+            <p className="text-[clamp(1rem,1.2vw,2.8rem)]">
+              To know more about <i>quote</i> usage{" "}
+              <Link to={"/quoteusage"} className="underline text-blue-500">
+                click here
               </Link>
-            </div>
-          );
-        })
-      ) : (
-        <div className="pt-[calc(2rem+3vw)] px-[calc(.5rem+.5vw)]  w-full text-center text-primary1">
-          <p className=" text-[clamp(1.1rem,1.3vw,3rem)]    ">
-            Sorry app reached daily qoute 😔{" "}
-          </p>
-          <p className="text-[clamp(1rem,1.2vw,2.8rem)]">
-            To know more about <i>quote</i> usage{" "}
-            <Link to={"/quoteusage"} className="underline text-blue-500">
-              click here
-            </Link>
-          </p>
+            </p>
+          </div>
+        )}
+      </section>
+      {loading && (
+        <div className="w-full mx-auto py-6  flex text-center ">
+          <p className=" text-primary1  w-full">Loading...</p>
         </div>
       )}
-
-      {loading && (
-        <p className="w-full text-center py-6 text-primary1">Loading...</p>
-      )}
-    </section>
+    </>
   );
 }
 
