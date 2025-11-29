@@ -120,25 +120,23 @@ function Content() {
   const lastVideoRef = useCallback(
     (node) => {
       if (loadingRef.current) return;
-setTimeout(() => {
-  
-  if (observerRef.current) observerRef.current.disconnect();
+      setTimeout(() => {
+        if (observerRef.current) observerRef.current.disconnect();
 
-  observerRef.current = new IntersectionObserver(
-    (entries) => {
-      if (entries[0].isIntersecting && hasMore && nextPageToken) {
-        fetchVideos(nextPageToken);
-      }
-    },
-    {
-      root: null,
-      rootMargin: "200px",
-      threshold: 0.1,
-    }
-  );
-  if (node) observerRef.current.observe(node);
-}, 100);
-
+        observerRef.current = new IntersectionObserver(
+          (entries) => {
+            if (entries[0].isIntersecting && hasMore && nextPageToken) {
+              fetchVideos(nextPageToken);
+            }
+          },
+          {
+            root: null,
+            rootMargin: "200px",
+            threshold: 0.1,
+          }
+        );
+        if (node) observerRef.current.observe(node);
+      }, 100);
     },
     [hasMore, nextPageToken]
   );
@@ -170,6 +168,7 @@ setTimeout(() => {
                 >
                   {/* thumbnail */}
                   <img
+                    loading="lazy"
                     src={video.snippet.thumbnails.medium.url}
                     alt={video.snippet.title}
                     className="w-full  md:rounded-2xl"

@@ -164,7 +164,7 @@ const VideoPlayer = () => {
             </div>
           </div>
           <div className=" ">
-            <img src={video.channelThumbnail} alt="" />
+            <img loading="lazy" src={video.channelThumbnail} alt="" />
           </div>
         </div>
       </div>
@@ -182,7 +182,7 @@ const VideoPlayer = () => {
             </div>
           </div>
           <div className=" ">
-            <img src={video.channelThumbnail} alt="" />
+            <img loading="lazy" src={video.channelThumbnail} alt="thumbnail" />
           </div>
         </div>
         {/* related videos */}

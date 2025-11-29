@@ -429,7 +429,7 @@ function Navbar({ expanded, setExpanded }) {
                   : "border-0 md:border-2"
               } rounded-3xl  `}
             >
-              <input
+              <input id="searchInput"
                 value={inputValue}
                 type="search"
                 onChange={(e) => setInputValue(e.target.value)}
@@ -450,6 +450,7 @@ function Navbar({ expanded, setExpanded }) {
                     onClick={() => setNavbarExpanded(true)}
                     className="text-[clamp(1.5rem,1.5vw,4rem)]  "
                   />
+                  
                 </button>
               </abbr>
             </form>
