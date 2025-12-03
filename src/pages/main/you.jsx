@@ -1,8 +1,10 @@
 import { useEffect } from "react";
 import { useGoogleLogin, googleLogout } from "@react-oauth/google";
+import { toast } from "sonner";
 import { useYouTube } from "../../youtuneContext";
 import { Link } from "react-router-dom";
 import { IoIosLogOut } from "react-icons/io";
+import axios from "axios";
 
 function You() {
   const {
@@ -14,45 +16,63 @@ function You() {
     setSubscriptions,
     likes,
     setLikes,
+    login,
   } = useYouTube();
 
+  console.log(subscriptions);
+
   // Fetch subscriptions
-  const fetchSubscriptions = (accessToken) => {
-    fetch(
-      "https://www.googleapis.com/youtube/v3/subscriptions?part=snippet&mine=true&maxResults=50",
-      { headers: { Authorization: `Bearer ${accessToken}` } }
-    )
-      .then((res) => res.json())
-      .then((data) => {
-        if (!data.items) return;
+  // const fetchSubscriptions = (accessToken) => {
+  //   fetch(
+  //     "https://www.googleapis.com/youtube/v3/subscriptions?part=snippet&mine=true&maxResults=50",
+  //     { headers: { Authorization: `Bearer ${accessToken}` } }
+  //   )
+  //     .then((res) => res.json())
+  //     .then((data) => {
+  //       if (!data.items) return;
 
-        setSubscriptions(data.items);
+  //       setSubscriptions(data.items);
 
-        localStorage.setItem("subscriptions", JSON.stringify(data.items));
-      })
-      .catch(console.error);
-  };
+  //       localStorage.setItem("subscriptions", JSON.stringify(data.items));
+  //     })
+  //     .catch(console.error);
+  // };
 
   // Google login
-  const login = useGoogleLogin({
-    flow: "implicit",
-    scope:
-      "https://www.googleapis.com/auth/youtube.readonly https://www.googleapis.com/auth/youtube https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email",
-    onSuccess: (tokenResponse) => {
-      const accessToken = tokenResponse.access_token;
-      setToken(accessToken);
-      localStorage.setItem("google_token", accessToken);
+  // const login = useGoogleLogin({
+  //   flow: "implicit",
+  //   scope:
+  //     "https://www.googleapis.com/auth/youtube.readonly https://www.googleapis.com/auth/youtube https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email",
+  //   onSuccess: (tokenResponse) => {
+  //     const accessToken = tokenResponse.access_token;
+  //     setToken(accessToken);
+  //     localStorage.setItem("google_token", accessToken);
 
-      // fetch user info
-      fetch("https://www.googleapis.com/oauth2/v3/userinfo", {
-        headers: { Authorization: `Bearer ${accessToken}` },
-      })
-        .then((res) => res.json())
-        .then(setUser);
+  //     // fetch user info
+  //     fetch("https://www.googleapis.com/oauth2/v3/userinfo", {
+  //       headers: { Authorization: `Bearer ${accessToken}` },
+  //     })
+  //       .then((res) => res.json())
+  //       .then((data) => {
+  //         setUser(data);
+  //         toast.success(
+  //           `Hey there, glad to see you! ${
+  //             data.given_name || data.name || "My friend"
+  //           } 🎉`
+  //         );
+  //       })
+  //       .catch((err) => {
+  //         console.error(err);
+  //         toast.error(
+  //           `Sorry, ${
+  //             user?.given_name || "friend"
+  //           }! Something went wrong. Try again.`
+  //         );
+  //       });
 
-      fetchSubscriptions(accessToken);
-    },
-  });
+  //     setToken(accessToken);
+  //   },
+  // });
 
   const handleLogout = () => {
     googleLogout();
@@ -60,6 +80,7 @@ function You() {
     setToken(null);
     setSubscriptions([]);
     localStorage.clear();
+    toast.success("Come back anytime, we’ll miss you! ❤️");
   };
 
   return (

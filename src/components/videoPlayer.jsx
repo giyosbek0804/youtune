@@ -1,15 +1,20 @@
 import React, { useCallback, useEffect, useState } from "react";
+import { Toaster } from "react-hot-toast";
 import { useLocation, Link, useParams } from "react-router-dom";
 import axios from "axios";
-import { formatDistanceToNow } from "date-fns";
+import { formatDistanceToNow, sub } from "date-fns";
+import { useYouTube } from "../youtuneContext";
+import { toast } from "sonner";
 
 const API_KEY = import.meta.env.VITE_YOUTUBE_API_KEY;
 
 const VideoPlayer = () => {
   const location = useLocation();
+  const { subscriptions, setSubscriptions } = useYouTube();
   const { video, videos } = location.state || {};
   const [fullVideo, setFullVideo] = useState(video || null);
   const [relatedVideos, setRelatedVideos] = useState([]);
+  const [thumbnail, setThumbnail] = useState("null");
   const { id } = useParams();
   const videoId = video?.id?.videoId || video?.id || id;
   const fetchVideos = useCallback(
@@ -86,34 +91,35 @@ const VideoPlayer = () => {
     loadFullDetails();
   }, [videoId]);
 
+  // useEffect(() => {
+  //   if (!fullVideo?.snippet?.categoryId) return; // wait until loaded
+
+  //   async function fetchRelated() {
+  //     try {
+  //       const response = await axios.get(
+  //         "https://www.googleapis.com/youtube/v3/search",
+  //         {
+  //           params: {
+  //             part: "snippet",
+  //             maxResults: 50,
+  //             type: "video",
+  //             relatedToVideoId: videoId,
+  //             key: API_KEY,
+  //           },
+  //         }
+  //       );
+  //       setRelatedVideos(response.data.items);
+  //     } catch (err) {
+  //       console.error("Failed to load related videos", err);
+  //     }
+  //   }
+
+  //   fetchRelated();
+  // }, [videoId, fullVideo]);
+  // console.log(relatedVideos);
+
   useEffect(() => {
-    if (!fullVideo?.snippet?.categoryId) return; // wait until loaded
-
-    async function fetchRelated() {
-      try {
-        const response = await axios.get(
-          "https://www.googleapis.com/youtube/v3/search",
-          {
-            params: {
-              part: "snippet",
-              maxResults: 50,
-              type: "video",
-              relatedToVideoId: videoId,
-              key: API_KEY,
-            },
-          }
-        );
-        setRelatedVideos(response.data.items);
-      } catch (err) {
-        console.error("Failed to load related videos", err);
-      }
-    }
-
-    fetchRelated();
-  }, [videoId, fullVideo]);
-
-  useEffect(() => {
-    setRelatedVideos([]); // reset when opening new video
+    // setRelatedVideos([]); // reset when opening new video
     fetchVideos(); // load category videos
   }, [videoId]);
   useEffect(() => {
@@ -139,8 +145,95 @@ const VideoPlayer = () => {
       fetchDirectVideo();
     }
   }, [id, video]);
+  // console.log(video);
 
-  console.log(relatedVideos);
+  // console.log(relatedVideos);
+  // fetch channel photo
+
+  const { token } = useYouTube();
+  //
+  async function subscribeChannel(video) {
+    try {
+      const res = await axios.post(
+        "https://www.googleapis.com/youtube/v3/subscriptions",
+        {
+          snippet: {
+            resourceId: {
+              kind: "youtube#channel",
+              channelId: video.snippet.channelId, // target channel
+            },
+          },
+        },
+        {
+          params: { part: "snippet" },
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      setSubscriptions((prev) => [...prev, res.data]);
+      toast.success(`Subscribed to ${video.snippet.channelTitle}! 🎉`);
+    } catch (err) {
+      console.error("Error subscribing:", err);
+      toast.error(
+        `Could not subscribe to ${video.snippet.channelTitle}. Try again!`
+      );
+    }
+  }
+  async function unSubscribeChannel(video) {
+    try {
+      // Find subscription ID for this channel
+      const sub = subscriptions.find(
+        (s) => s.snippet.resourceId.channelId === video.snippet.channelId
+      );
+
+      if (!sub) {
+        toast.error(`You are not subscribed to ${video.snippet.channelTitle}`);
+        return; // stop function
+      }
+
+      await axios.delete(
+        "https://www.googleapis.com/youtube/v3/subscriptions",
+        {
+          params: { id: sub.id },
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      setSubscriptions((prev) =>
+        prev.filter(
+          (s) => s.snippet.resourceId.channelId !== video.snippet.channelId
+        )
+      );
+      toast.success(`Unsubscribed from ${video.snippet.channelTitle}!`);
+    } catch (err) {
+      console.error("Error unsubscribing:", err.response?.data || err);
+      toast.error(
+        `Could not unsubscribe from ${video.snippet.channelTitle}. Try again!`
+      );
+    }
+  }
+
+  const isSubscribed = subscriptions.some(
+    (sub) => sub.snippet.resourceId.channelId === video.snippet.channelId
+  );
+
+  // console.log(video);
+  console.log(fullVideo);
+
+  axios
+    .get("https://www.googleapis.com/youtube/v3/channels", {
+      params: { part: "snippet", id: video.snippet.channelId, key: API_KEY },
+    })
+    .then((res) => {
+      const channel = res.data.items[0];
+      // console.log(channel);
+      setThumbnail(channel.snippet.thumbnails.default.url);
+    });
+  // console.log(thumbnail);
 
   return (
     <div className=" w-full relative    gap-[calc(1rem+1vw)]   flex justify-between ">
@@ -154,35 +247,58 @@ const VideoPlayer = () => {
           title={video.snippet.title}
         ></iframe>
         <div className="max-lg:hidden">
-          {/* video info */}
+          {/* video info laptop */}
           <div className="flex px-[calc(1rem+1vw)]  items-start justify-between  w-full">
             <div className="  py-[calc(.7em+.5vw)]">
               <h3 className="line-clamp-2 text-[clamp(1.05rem,1.3vw,3rem)] font-medium leading-tight text-primary1">
                 {video.snippet.title}
               </h3>
-              <div className="flex items-center line-clamp-2 text-secondary2 py-[calc(.2rem+.2vw)] gap-[calc(.1rem+.1vw)] text-[clamp(.74rem,.9vw,2rem)]"></div>
+              {/* <div className="flex items-center line-clamp-2 text-secondary2 py-[calc(.2rem+.2vw)] gap-[calc(.1rem+.1vw)] text-[clamp(.74rem,.9vw,2rem)]"></div> */}
             </div>
           </div>
           <div className=" ">
-            <img loading="lazy" src={video.channelThumbnail} alt="thumbnail" />
+            <img
+              loading="lazy"
+              src={video.channelThumbnail || thumbnail}
+              alt="thumbnail"
+            />
           </div>
         </div>
       </div>
-      {/* suggestions */}
+
       <div className="pt-[calc(10rem+11vw)] lg:pt-0 relative   w-full lg:w-3/10   ">
-        {/* video details */}
+        {/* video details mobile */}
         <div className="lg:hidden">
           {/* video info */}
           <div className="flex px-[calc(1rem+1vw)]  items-start justify-between  w-full">
-            <div className="  py-[calc(.7em+.5vw)]">
+            <div className="  py-[calc(.7em+.5vw)] ">
               <h3 className="line-clamp-2 text-white text-[clamp(1.05rem,1.3vw,3rem)] font-medium leading-tight">
                 {video.snippet.title}
               </h3>
-              <div className="flex items-center line-clamp-2 text-secondary2 py-[calc(.2rem+.2vw)] gap-[calc(.1rem+.1vw)] text-[clamp(.74rem,.9vw,2rem)]"></div>
+              {/* <div className="flex items-center line-clamp-2 text-secondary2 py-[calc(.2rem+.2vw)] gap-[calc(.1rem+.1vw)] text-[clamp(.74rem,.9vw,2rem)] "></div> */}
             </div>
           </div>
-          <div className=" ">
-            <img loading="lazy" src={video.channelThumbnail} alt="thumbnail" />
+          <div className=" border flex px-[calc(1rem+1vw)] items-center justify-between gap-2 ">
+            <Link to={`/subscriptionslist/${video.snippet.channelTitle}`}>
+              <div className="flex items-center gap-2">
+                <img
+                  loading="lazy"
+                  src={video.channelThumbnail || thumbnail}
+                  alt="thumbnail"
+                  className="rounded-full w-[calc(1.8rem+2vw)]  h-auto"
+                />
+                <p>{video.snippet.channelTitle}</p>
+              </div>
+            </Link>
+            <button
+              disabled={!subscriptions.length}
+              onClick={() =>
+                isSubscribed ? unSubscribeChannel(video) : subscribeChannel(video)
+              }
+              className="border rounded-[18px] bg-primary1 text-background px-[calc(.7rem+.5vw)] py-[calc(.35rem+.4vw)] text-[clamp(.86rem,1vw,2.8rem)] font-medium font-inter  "
+            >
+              {isSubscribed ? "Subscribed" : "Subscribe"}
+            </button>
           </div>
         </div>
         {/* related videos */}
@@ -195,7 +311,7 @@ const VideoPlayer = () => {
                 to={`/video/${v.id}`}
                 state={{ video: v, videos }}
               >
-                <div className="w-full xl:flex max-xl:mb-[calc(.5rem+.4vw)]  my-[calc(.2rem+.2vw)] gap-2">
+                <div className="w-full xl:flex max-xl:pb-[calc(.5rem+.4vw)]    my-[calc(.2rem+.2vw)] gap-2">
                   <img
                     src={v.snippet.thumbnails.medium.url}
                     alt={v.snippet.title}

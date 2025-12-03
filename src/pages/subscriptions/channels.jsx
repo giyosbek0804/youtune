@@ -4,11 +4,31 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 function SubscriptionList() {
-  const { subscriptions } = useYouTube();
+  const { subscriptions, setSubscriptions, token } = useYouTube();
+  const [loading, setLoading] = useState(true);
 
+  console.log(subscriptions);
+  useEffect(() => {
+    if (subscriptions.length > 0) {
+      setLoading(false);
+    }
+  }, [subscriptions]);
   return (
     <div className="w-full">
-      {subscriptions.length === 0 && <p>No subscriptions found.</p>}
+      {subscriptions.length === 0 && (
+        <>
+          <p
+            className={` ${
+              loading ? "block" : "hidden"
+            } border w-full text-center text-primary1 text-[clamp(1rem,1.1vw,2.4rem)]`}
+          >
+            <span className="loading-spinner loading border "></span>
+          </p>
+          <p className={` ${!loading ? "block" : "hidden"}`}>
+            No subscriptions found. Go subscribe to some channels!
+          </p>
+        </>
+      )}
       <ul className="  pb-[calc(4rem+4vw)] ">
         {subscriptions.map((sub) => (
           <Link

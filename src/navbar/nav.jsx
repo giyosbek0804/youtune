@@ -429,7 +429,8 @@ function Navbar({ expanded, setExpanded }) {
                   : "border-0 md:border-2"
               } rounded-3xl  `}
             >
-              <input id="searchInput"
+              <input
+                id="searchInput"
                 value={inputValue}
                 type="search"
                 onChange={(e) => setInputValue(e.target.value)}
@@ -450,7 +451,6 @@ function Navbar({ expanded, setExpanded }) {
                     onClick={() => setNavbarExpanded(true)}
                     className="text-[clamp(1.5rem,1.5vw,4rem)]  "
                   />
-                  
                 </button>
               </abbr>
             </form>
@@ -607,7 +607,7 @@ function Navbar({ expanded, setExpanded }) {
                   <hr
                     className={`${
                       showExtra ? "block" : "hidden"
-                    } my-[calc(.1rem+.1vw)]    text-hover2`}
+                    } my-[calc(.1rem+.1vw)]    text-border`}
                   />
                 </div>
               </div>

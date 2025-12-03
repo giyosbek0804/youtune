@@ -35,7 +35,7 @@ export default function Search() {
 
     fetchSearchResults();
   }, [searchQuery]);
-  console.log(videos);
+  // console.log(videos);
 
   return (
     //   {render results}
