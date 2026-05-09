@@ -32,7 +32,7 @@ function SubscriptionList() {
       <ul className="  pb-[calc(4rem+4vw)] ">
         {subscriptions.map((sub) => (
           <Link
-            to={`/subscriptionslist/${sub.snippet.title}`}
+            to={`/subscriptionslist/${sub.snippet.resourceId.channelId}`}
             key={sub.id}
             className=" flex items-center  w-[100%] m-auto my-[calc(.3rem+.1vw)] py-[calc(.3rem+.3vw)] pl-[calc(.6rem+1vw)] pr-[calc(.6rem+.6vw)]"
           >

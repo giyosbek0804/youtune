@@ -341,7 +341,7 @@ function Navbar({ expanded, setExpanded }) {
       label: sub.snippet.title,
       selected: false,
       message: true,
-      path: `/subscriptionslist/${sub.snippet.title}`,
+      path: `/subscriptionslist/${sub.snippet.resourceId.channelId}`,
     });
   });
   useEffect(() => {
