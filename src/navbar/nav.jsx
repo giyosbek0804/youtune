@@ -53,7 +53,7 @@ function Navbar({ expanded, setExpanded }) {
   const [selected, setSelected] = useState("home");
   const [showExtra, setShowExtra] = useState(false);
   const location = useLocation();
-  const { subscriptions } = useYouTube();
+  const { subscriptions, user } = useYouTube();
   const [filterSelector, setFilterSelector] = useState("all");
   const showFilters = location.pathname === "/";
 
@@ -477,8 +477,8 @@ function Navbar({ expanded, setExpanded }) {
               <FaRegBell className="" />
             </abbr>
             <img
-              className="h-auto w-[calc(1.2rem+1.05vw)] rounded-full  cursor-pointer"
-              src="/images/user-image.jpg"
+              className="h-auto w-[calc(1.2rem+1.05vw)] rounded-full cursor-pointer object-cover aspect-square"
+              src={user?.picture || "/images/user-image.jpg"}
               alt="user profile image"
             />
           </div>

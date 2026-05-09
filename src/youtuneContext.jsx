@@ -15,7 +15,7 @@ export const YouTubeProvider = ({ children }) => {
   const [likes, setLikes] = useState([]);
   const [history, setHistory] = useState([]);
   const [watchLater, setWatchLater] = useState([]);
-  const [filter, setFilter] = useState("Sports");
+  const [filter, setFilter] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
 
   const login = useGoogleLogin({
