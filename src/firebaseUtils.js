@@ -83,3 +83,47 @@ export const removeFromCollection = async (email, collectionName, video) => {
     toast.error("Failed to remove item");
   }
 };
+
+export const saveSubscriptionsToFirebase = async (email, subscriptions) => {
+  if (!email) return;
+  const userRef = doc(db, "users", email);
+  try {
+    await updateDoc(userRef, { subscriptions });
+    console.log("Subscriptions saved to Firebase");
+  } catch (err) {
+    console.error("Error saving subscriptions to Firebase:", err);
+  }
+};
+
+export const addSubscriptionToFirebase = async (email, subscription) => {
+  if (!email) return;
+  const userRef = doc(db, "users", email);
+  try {
+    await updateDoc(userRef, {
+      subscriptions: arrayUnion(subscription)
+    });
+  } catch (err) {
+    console.error("Error adding subscription to Firebase:", err);
+  }
+};
+
+export const removeSubscriptionFromFirebase = async (email, channelId) => {
+  if (!email) return;
+  const userRef = doc(db, "users", email);
+  try {
+    const docSnap = await getDoc(userRef);
+    if (!docSnap.exists()) return;
+
+    const userData = docSnap.data();
+    const existingSubs = userData.subscriptions || [];
+    const updatedSubs = existingSubs.filter(
+      (s) => s.snippet.resourceId.channelId !== channelId
+    );
+
+    await updateDoc(userRef, {
+      subscriptions: updatedSubs
+    });
+  } catch (err) {
+    console.error("Error removing subscription from Firebase:", err);
+  }
+};

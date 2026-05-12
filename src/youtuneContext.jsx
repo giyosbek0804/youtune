@@ -4,7 +4,7 @@ import { useGoogleLogin, googleLogout } from "@react-oauth/google";
 import { toast } from "sonner";
 import { db } from "./firebase";
 import { doc, setDoc, onSnapshot } from "firebase/firestore";
-import { toggleCollectionItem, addToHistoryUtil, removeFromCollection } from "./firebaseUtils";
+import { toggleCollectionItem, addToHistoryUtil, removeFromCollection, saveSubscriptionsToFirebase, addSubscriptionToFirebase, removeSubscriptionFromFirebase } from "./firebaseUtils";
 
 const YouTubeContext = createContext();
 
@@ -17,6 +17,7 @@ export const YouTubeProvider = ({ children }) => {
   const [watchLater, setWatchLater] = useState([]);
   const [filter, setFilter] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
+  const [hasFetchedThisSession, setHasFetchedThisSession] = useState(false);
 
   const login = useGoogleLogin({
     flow: "implicit",
@@ -26,6 +27,7 @@ export const YouTubeProvider = ({ children }) => {
       const accessToken = tokenResponse.access_token;
       setToken(accessToken);
       localStorage.setItem("google_token", accessToken);
+      setHasFetchedThisSession(false); // Reset to fetch fresh data for new login
 
       // fetch user info
       fetch("https://www.googleapis.com/oauth2/v3/userinfo", {
@@ -88,6 +90,7 @@ export const YouTubeProvider = ({ children }) => {
         setLikes(data.likes || []);
         setHistory(data.history || []);
         setWatchLater(data.watchLater || []);
+        setSubscriptions(data.subscriptions || []);
       } else {
         console.log("Firebase Sync: No document found, creating new profile...");
         // Create user doc if it doesn't exist
@@ -97,6 +100,7 @@ export const YouTubeProvider = ({ children }) => {
           likes: [],
           history: [],
           watchLater: [],
+          subscriptions: [],
           createdAt: new Date()
         }).catch(err => {
           console.error("Firebase Sync: Error creating profile (check your Rules!):", err);
@@ -139,7 +143,7 @@ export const YouTubeProvider = ({ children }) => {
 
   // fetch subscriptions
   async function fetchSubscriptions() {
-    if (!token) return;
+    if (!token || !user?.email || hasFetchedThisSession) return;
 
     let nextPageToken = "";
     let allSubs = [];
@@ -171,7 +175,10 @@ export const YouTubeProvider = ({ children }) => {
         (sub, index, self) => self.findIndex((s) => s.id === sub.id) === index
       );
 
-      setSubscriptions(uniqueSubs);
+      // Save to Firebase and mark as fetched for this session
+      await saveSubscriptionsToFirebase(user.email, uniqueSubs);
+      setHasFetchedThisSession(true);
+      // setSubscriptions(uniqueSubs); // Handled by onSnapshot
     } catch (err) {
       console.error("Error fetching subscriptions:", err);
       if (err.response?.status === 401) {
@@ -186,8 +193,8 @@ export const YouTubeProvider = ({ children }) => {
     }
   }
   useEffect(() => {
-    if (token) fetchSubscriptions();
-  }, [token]);
+    if (token && user?.email) fetchSubscriptions();
+  }, [token, user?.email]);
 
   async function subscribeChannel(channelId, channelTitle) {
     if (!token) {
@@ -213,7 +220,9 @@ export const YouTubeProvider = ({ children }) => {
           },
         }
       );
-      setSubscriptions((prev) => [...prev, res.data]);
+      
+      // Update Firebase
+      await addSubscriptionToFirebase(user.email, res.data);
       toast.success(`Subscribed to ${channelTitle}! 🎉`);
     } catch (err) {
       console.error("Error subscribing:", err);
@@ -243,9 +252,8 @@ export const YouTubeProvider = ({ children }) => {
         }
       );
 
-      setSubscriptions((prev) =>
-        prev.filter((s) => s.snippet.resourceId.channelId !== channelId)
-      );
+      // Update Firebase
+      await removeSubscriptionFromFirebase(user.email, channelId);
       toast.success(`Unsubscribed from ${channelTitle}!`);
     } catch (err) {
       console.error("Error unsubscribing:", err);

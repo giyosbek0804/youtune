@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 function SubscriptionList() {
-  const { subscriptions, setSubscriptions, token } = useYouTube();
+  const { subscriptions, setSubscriptions, token, user, login } = useYouTube();
   const [loading, setLoading] = useState(true);
 
   console.log(subscriptions);
@@ -15,7 +15,23 @@ function SubscriptionList() {
   }, [subscriptions]);
   return (
     <div className="w-full">
-      {subscriptions.length === 0 && (
+      {!token && (
+        <div className="flex flex-col items-center justify-center py-[calc(4rem+4vw)] text-center">
+          <p className="text-primary1 text-[clamp(1.2rem,1.4vw,3rem)] mb-4 font-bold">
+            Don't miss out on new videos
+          </p>
+          <p className="text-primary1 opacity-70 text-[clamp(.9rem,1vw,2.5rem)] mb-6">
+            Sign in to see updates from your favorite channels
+          </p>
+          <button
+            onClick={login}
+            className="flex items-center gap-2 border border-blue-500 text-blue-500 px-4 py-2 rounded-3xl hover:bg-blue-500/10 transition-colors font-medium"
+          >
+            Sign in
+          </button>
+        </div>
+      )}
+      {token && subscriptions.length === 0 && (
         <>
           <p
             className={` ${

@@ -53,7 +53,7 @@ function Navbar({ expanded, setExpanded }) {
   const [selected, setSelected] = useState("home");
   const [showExtra, setShowExtra] = useState(false);
   const location = useLocation();
-  const { subscriptions, user } = useYouTube();
+  const { subscriptions, user, login } = useYouTube();
   const [filterSelector, setFilterSelector] = useState("all");
   const showFilters = location.pathname === "/";
 
@@ -156,17 +156,28 @@ function Navbar({ expanded, setExpanded }) {
       id: "subscription",
       title: null,
       alwaysVisible: showExtra,
-      links: [
-        {
-          id: "subscriptionsList",
-          icon: <LuHistory />,
-          label: "Subscriptions   >",
-          selected: false,
-          title: true,
-          message: true,
-          path: "/subscriptionslist",
-        },
-      ],
+      links: user
+        ? [
+            {
+              id: "subscriptionsList",
+              icon: <LuHistory />,
+              label: "Subscriptions   >",
+              selected: false,
+              title: true,
+              message: true,
+              path: "/subscriptionslist",
+            },
+          ]
+        : [
+            {
+              id: "subscriptionsLogin",
+              icon: <FaUserCircle />,
+              label: "Sign in to see subscriptions",
+              selected: false,
+              path: "/",
+              isLoginPrompt: true,
+            },
+          ],
     },
     {
       id: "explore",
@@ -328,22 +339,24 @@ function Navbar({ expanded, setExpanded }) {
     return { ...filter, id: filter.filter.toLowerCase(), selected: false };
   });
 
-  subscriptions.forEach((sub) => {
-    asideData[2].links.push({
-      id: sub.snippet.title,
-      icon: (
-        <img
-          src={sub.snippet.thumbnails.medium.url}
-          className="w-[calc(.5rem+1.2vw)] h-auto rounded-full"
-          alt={sub.title}
-        />
-      ),
-      label: sub.snippet.title,
-      selected: false,
-      message: true,
-      path: `/subscriptionslist/${sub.snippet.resourceId.channelId}`,
+  if (user) {
+    subscriptions.forEach((sub) => {
+      asideData[2].links.push({
+        id: sub.snippet.title,
+        icon: (
+          <img
+            src={sub.snippet.thumbnails.medium.url}
+            className="w-[calc(.5rem+1.2vw)] h-auto rounded-full"
+            alt={sub.title}
+          />
+        ),
+        label: sub.snippet.title,
+        selected: false,
+        message: true,
+        path: `/subscriptionslist/${sub.snippet.resourceId.channelId}`,
+      });
     });
-  });
+  }
   useEffect(() => {
     // Find the section that contains the current path
     const matchedSection = asideData.find((section) =>
@@ -544,7 +557,13 @@ function Navbar({ expanded, setExpanded }) {
                   {section.links.map((link) => (
                     <Link
                       key={link.id}
-                      to={link.path}
+                      to={link.isLoginPrompt ? "#" : link.path}
+                      onClick={(e) => {
+                        if (link.isLoginPrompt) {
+                          e.preventDefault();
+                          login();
+                        }
+                      }}
                       className={` ${
                         link.id === "youSmall"
                           ? `${expandAside ? "hidden" : "block"}`
