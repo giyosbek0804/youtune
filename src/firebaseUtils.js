@@ -127,3 +127,90 @@ export const removeSubscriptionFromFirebase = async (email, channelId) => {
     console.error("Error removing subscription from Firebase:", err);
   }
 };
+
+// --- HOME FEED CACHE UTILITIES ---
+const CACHE_DURATION_MS = 48 * 60 * 60 * 1000; // 48 hours
+
+export const getPublicHomeFeed = async () => {
+  try {
+    const docRef = doc(db, "homeFeeds", "public");
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+      const data = docSnap.data();
+      const now = new Date().getTime();
+      const lastUpdated = data.lastUpdated?.toMillis() || 0;
+      
+      if (now - lastUpdated < CACHE_DURATION_MS) {
+        return data.videos;
+      }
+    }
+    return null; // Cache expired or doesn't exist
+  } catch (err) {
+    console.error("Error getting public home feed:", err);
+    return null;
+  }
+};
+
+export const savePublicHomeFeed = async (videos) => {
+  try {
+    const docRef = doc(db, "homeFeeds", "public");
+    await updateDoc(docRef, {
+      videos,
+      lastUpdated: new Date()
+    }).catch(async (e) => {
+      // If document doesn't exist, use setDoc
+      if (e.code === 'not-found') {
+        const { setDoc } = await import('firebase/firestore');
+        await setDoc(docRef, { videos, lastUpdated: new Date() });
+      } else {
+        throw e;
+      }
+    });
+    console.log("Public home feed cached in Firebase.");
+  } catch (err) {
+    console.error("Error saving public home feed:", err);
+  }
+};
+
+export const getPersonalizedHomeFeed = async (email) => {
+  if (!email) return null;
+  try {
+    const docRef = doc(db, "homeFeeds", email);
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+      const data = docSnap.data();
+      const now = new Date().getTime();
+      const lastUpdated = data.lastUpdated?.toMillis() || 0;
+      
+      if (now - lastUpdated < CACHE_DURATION_MS) {
+        return data.videos;
+      }
+    }
+    return null;
+  } catch (err) {
+    console.error("Error getting personalized home feed:", err);
+    return null;
+  }
+};
+
+export const savePersonalizedHomeFeed = async (email, videos) => {
+  if (!email) return;
+  try {
+    const docRef = doc(db, "homeFeeds", email);
+    await updateDoc(docRef, {
+      videos,
+      lastUpdated: new Date()
+    }).catch(async (e) => {
+      // If document doesn't exist, use setDoc
+      if (e.code === 'not-found') {
+        const { setDoc } = await import('firebase/firestore');
+        await setDoc(docRef, { videos, lastUpdated: new Date() });
+      } else {
+        throw e;
+      }
+    });
+    console.log("Personalized home feed cached in Firebase.");
+  } catch (err) {
+    console.error("Error saving personalized home feed:", err);
+  }
+};

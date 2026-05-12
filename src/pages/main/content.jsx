@@ -5,6 +5,12 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { HiOutlineDotsVertical } from 'react-icons/hi'
 import { Link } from 'react-router-dom'
 import { useYouTube } from '../../youtuneContext'
+import {
+  getPublicHomeFeed,
+  savePublicHomeFeed,
+  getPersonalizedHomeFeed,
+  savePersonalizedHomeFeed,
+} from "../../firebaseUtils";
 
 const API_KEY = import.meta.env.VITE_YOUTUBE_API_KEY
 
@@ -24,6 +30,7 @@ function Content() {
 		setSearchQuery,
 		token,
 		subscriptions,
+        user,
 	} = useYouTube()
 
 	// Sync ref whenever loading changes
@@ -59,49 +66,85 @@ function Content() {
 				let allItems = []
 				let newNextPage = ''
 
+				// Check cache first if it's the home feed (filter === "all" and first page)
+				const isHomeFeed = (filter === 'all' || !filter) && !pageToken
+
+				if (isHomeFeed) {
+					if (token && subscriptions?.length > 0) {
+						const cached = await getPersonalizedHomeFeed(user?.email)
+						if (cached) {
+							setVideos(cached)
+							setHasMore(false) // Disable infinite scroll for cached feed
+							setLoading(false)
+							return
+						}
+					} else {
+						const cached = await getPublicHomeFeed()
+						if (cached) {
+							setVideos(cached)
+							setHasMore(false)
+							setLoading(false)
+							return
+						}
+					}
+				}
+
 				if (
 					token &&
 					(filter === 'all' || !filter) &&
 					subscriptions?.length > 0
 				) {
 					try {
-						// 1. Fetch from subscriptions ONLY (top 10 channels)
-						const subRequests = subscriptions.slice(0, 10).map(sub =>
-							axios
-								.get('https://www.googleapis.com/youtube/v3/search', {
+						// 1. Fetch from subscriptions ONLY (up to 30 channels, 4 videos each = 120 videos)
+						const subRequests = subscriptions.slice(0, 30).map(sub => {
+							const channelId = sub.snippet.resourceId.channelId
+							// Pro Hack: replace UC with UU to get the uploads playlist
+							const playlistId = 'UU' + channelId.substring(2)
+							
+							return axios
+								.get('https://www.googleapis.com/youtube/v3/playlistItems', {
 									params: {
 										part: 'snippet',
-										channelId: sub.snippet.resourceId.channelId,
-										order: 'date',
-										maxResults: 5,
-										type: 'video',
+										playlistId: playlistId,
+										maxResults: 4,
 										key: API_KEY,
 									},
 								})
-								.catch(() => ({ data: { items: [] } })),
-						)
+								.catch(() => ({ data: { items: [] } }))
+						})
 
 						const subResponses = await Promise.all(subRequests)
 						subResponses.forEach(res =>
 							allItems.push(...(res.data.items || [])),
 						)
 
-						// 2. Fetch full details (statistics/views) for these search results
+						// 2. Fetch full details (statistics/views/duration) for these items
 						if (allItems.length > 0) {
 							const videoIds = allItems
-								.map(v => v.id?.videoId || v.id)
-								.join(',')
-							const statsRes = await axios.get(
-								'https://www.googleapis.com/youtube/v3/videos',
-								{
+								.map(v => v.snippet.resourceId.videoId)
+								.filter(Boolean)
+							
+							// Split into chunks of 50 (API limit)
+							const chunks = []
+							for (let i = 0; i < videoIds.length; i += 50) {
+								chunks.push(videoIds.slice(i, i + 50).join(','))
+							}
+
+							const statsPromises = chunks.map(idChunk =>
+								axios.get('https://www.googleapis.com/youtube/v3/videos', {
 									params: {
 										part: 'snippet,statistics,contentDetails',
-										id: videoIds,
+										id: idChunk,
 										key: API_KEY,
 									},
-								},
+								}).catch(() => ({ data: { items: [] } }))
 							)
-							allItems = statsRes.data.items || allItems
+
+							const statsResponses = await Promise.all(statsPromises)
+							allItems = []
+							statsResponses.forEach(res => {
+								allItems.push(...(res.data.items || []))
+							})
 						}
 
 						// 3. Sort by date
@@ -111,6 +154,9 @@ function Content() {
 								new Date(a.snippet.publishedAt),
 						)
 
+						// Limit to 120
+						allItems = allItems.slice(0, 120)
+
 						if (allItems.length === 0) {
 							console.log('No videos found in subscriptions.')
 						}
@@ -118,39 +164,77 @@ function Content() {
 						console.error('Sub feed failed:', e)
 					}
 				} else {
-					const res = await axios.get(
-						'https://www.googleapis.com/youtube/v3/videos',
-						{
-							params: {
-								part: 'snippet,contentDetails,statistics',
-								chart: 'mostPopular',
-								regionCode: 'US',
-								maxResults: 50,
-								order: 'viewCount',
-								key: API_KEY,
-								pageToken: pageToken || undefined,
-								videoCategoryId: getCategoryId(filter),
+					if (isHomeFeed) {
+						// Fetch ~120 videos for public cache
+						let publicItems = []
+						let currentToken = ''
+						
+						for (let i = 0; i < 3; i++) { // 3 pages * 50 = 150
+							const res = await axios.get(
+								'https://www.googleapis.com/youtube/v3/videos',
+								{
+									params: {
+										part: 'snippet,contentDetails,statistics',
+										chart: 'mostPopular',
+										regionCode: 'US',
+										maxResults: 50,
+										key: API_KEY,
+										pageToken: currentToken || undefined,
+									},
+								},
+							)
+							publicItems.push(...(res.data.items || []))
+							currentToken = res.data.nextPageToken
+							if (!currentToken) break
+						}
+						allItems = publicItems.slice(0, 120)
+						newNextPage = '' // Disable infinite scroll for home feed
+					} else {
+						// Standard fetch for categories
+						const res = await axios.get(
+							'https://www.googleapis.com/youtube/v3/videos',
+							{
+								params: {
+									part: 'snippet,contentDetails,statistics',
+									chart: 'mostPopular',
+									regionCode: 'US',
+									maxResults: 50,
+									key: API_KEY,
+									pageToken: pageToken || undefined,
+									videoCategoryId: getCategoryId(filter),
+								},
 							},
-						},
-					)
-					allItems = res.data.items || []
-					newNextPage = res.data.nextPageToken || ''
+						)
+						allItems = res.data.items || []
+						newNextPage = res.data.nextPageToken || ''
+					}
 				}
 
 				// Fetch channel thumbnails
 				const channelIds = [
 					...new Set(allItems.map(v => v.snippet.channelId)),
-				].join(',')
+				]
+				.filter(Boolean)
+				
 				let channelMap = {}
-				if (channelIds) {
-					const chRes = await axios.get(
-						'https://www.googleapis.com/youtube/v3/channels',
-						{
-							params: { part: 'snippet', id: channelIds, key: API_KEY },
-						},
+				if (channelIds.length > 0) {
+					// Split into chunks of 50 for channels API
+					const chChunks = []
+					for (let i = 0; i < channelIds.length; i += 50) {
+						chChunks.push(channelIds.slice(i, i + 50).join(','))
+					}
+					
+					const chPromises = chChunks.map(chunk => 
+						axios.get('https://www.googleapis.com/youtube/v3/channels', {
+							params: { part: 'snippet', id: chunk, key: API_KEY },
+						}).catch(() => ({ data: { items: [] } }))
 					)
-					;(chRes.data.items || []).forEach(ch => {
-						channelMap[ch.id] = ch.snippet?.thumbnails?.default?.url || ''
+					
+					const chResponses = await Promise.all(chPromises)
+					chResponses.forEach(res => {
+						;(res.data.items || []).forEach(ch => {
+							channelMap[ch.id] = ch.snippet?.thumbnails?.default?.url || ''
+						})
 					})
 				}
 
@@ -159,6 +243,19 @@ function Content() {
 					channelThumbnail: channelMap[v.snippet.channelId] || '',
 					id: v.id?.videoId || v.id, // Crucial for Search API vs Videos API
 				}))
+
+				// Cache the results if it's the home feed
+				if (isHomeFeed && itemsWithChannels.length > 0) {
+					if (token && subscriptions?.length > 0) {
+						await savePersonalizedHomeFeed(user?.email, itemsWithChannels)
+					} else {
+						await savePublicHomeFeed(itemsWithChannels)
+					}
+					setVideos(itemsWithChannels)
+					setHasMore(false)
+					setLoading(false)
+					return
+				}
 
 				setVideos(prev => {
 					const newVideos = itemsWithChannels.filter(
